@@ -6,7 +6,7 @@ A easy to use editor for creating VR scenes using A-FRAME.
 
 ## Getting started
 
-1. [Download A-FRAME editor script](https://caseyyee.github.io/aframe-editor/build/aframe-editor.js)
+1. [Download A-FRAME editor script](https://caseyyee.github.io/aframe-editor/dist/aframe-editor.js)
 
 2. Add script to your A-FRAME document:
 
