@@ -34,3 +34,6 @@ A easy to use editor for creating VR scenes using A-FRAME.
     *  Sphere shaped reticule -- adds new object to the scene. 
 
     *  `[` and `]` cycles through the different object primitives.
+
+### Docs
+[V1 MVP Features and Ideas](https://docs.google.com/document/d/1b4L-mzBMUgyKRlb-MlWo42yy1vplaKLkFb2D7JDVKQA/edit)
