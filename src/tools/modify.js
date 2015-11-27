@@ -1,11 +1,13 @@
+/* global THREE */
+
 /*
 Modify entity tool
 */
-Tool = {
+module.exports = {
   name: 'Modify',
 
   start: function () {
-    var scene = this.scene = document.querySelector('a-scene');
+    this.scene = document.querySelector('a-scene');
     this.camera = this.scene.cameraEl;
 
     this.setupCursor();
@@ -20,7 +22,7 @@ Tool = {
     this.removeCursor();
   },
 
-  addListeners: function() {
+  addListeners: function () {
     this.onContextmenu = this.use.bind(this);
     this.onIntersection = this.handleIntersection.bind(this);
     this.onIntersectionClear = this.handleIntersectionClear.bind(this);
@@ -30,7 +32,7 @@ Tool = {
     this.cursor.addEventListener('intersectioncleared', this.onIntersectionClear);
   },
 
-  removeListeners: function() {
+  removeListeners: function () {
     this.scene.canvas.removeEventListener('contextmenu', this.onContextmenu);
     this.cursor.removeEventListener('intersection', this.onIntersection);
     this.cursor.removeEventListener('intersectioncleared', this.onIntersectionClear);
@@ -46,7 +48,7 @@ Tool = {
     this.camera.appendChild(this.cursor);
   },
 
-  removeCursor: function() {
+  removeCursor: function () {
     this.cursor.parentNode.removeChild(this.cursor);
     this.cursor = null;
   },
@@ -59,7 +61,7 @@ Tool = {
     this.currentIntersection = null;
   },
 
-  pick: function() {
+  pick: function () {
     if (!this.currentIntersection) {
       return;
     }
@@ -68,7 +70,7 @@ Tool = {
     var distance = this.currentIntersection.distance;
     var clone = entity.cloneNode();
 
-    clone.setAttribute('position', { x: 0, y: 0, z: -distance});
+    clone.setAttribute('position', {x: 0, y: 0, z: -distance});
 
     this.camera.appendChild(clone);
 
@@ -77,7 +79,7 @@ Tool = {
     this.selectedEntity = clone;
   },
 
-  drop: function() {
+  drop: function () {
     if (!this.selectedEntity) {
       return;
     }
@@ -92,7 +94,7 @@ Tool = {
       x: 0,
       y: euler.y * (180 / Math.PI),
       z: 0
-    }
+    };
 
     // position
     var position = new THREE.Vector3();
@@ -117,6 +119,4 @@ Tool = {
       this.drop();
     }
   }
-}
-
-module.exports = Tool;
+};

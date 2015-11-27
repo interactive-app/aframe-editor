@@ -1,6 +1,5 @@
-/*
-Place new entity tool
-*/
+/* global THREE */
+
 var colours = ['#DA6369', '#4191A6', '#5AA89A', '#5AA89A', '#F39C85'];
 
 var primitives = [
@@ -27,11 +26,14 @@ var primitives = [
   }
 ];
 
-Tool = {
+/*
+Place new entity tool
+*/
+module.exports = {
   name: 'Place',
 
   start: function () {
-    var scene = this.scene = document.querySelector('a-scene');
+    this.scene = document.querySelector('a-scene');
     this.camera = this.scene.cameraEl;
 
     this.setupCursor();
@@ -46,14 +48,14 @@ Tool = {
     this.removeCursor();
   },
 
-  addListeners: function() {
+  addListeners: function () {
     this.onContextmenu = this.use.bind(this);
     this.onKeypress = this.handleKeypress.bind(this);
     this.scene.canvas.addEventListener('contextmenu', this.onContextmenu);
     window.addEventListener('keypress', this.onKeypress);
   },
 
-  removeListeners: function() {
+  removeListeners: function () {
     this.scene.canvas.removeEventListener('contextmenu', this.onContextmenu);
   },
 
@@ -67,13 +69,13 @@ Tool = {
     this.camera.appendChild(this.cursor);
   },
 
-  removeCursor: function() {
+  removeCursor: function () {
     this.cursor.parentNode.removeChild(this.cursor);
     this.cursor = null;
   },
 
-  handleKeypress: function(e) {
-    switch(e.charCode) {
+  handleKeypress: function (e) {
+    switch (e.charCode) {
       case 91: // [
         this.prev();
         break;
@@ -83,7 +85,7 @@ Tool = {
     }
   },
 
-  prev: function() {
+  prev: function () {
     if (!this.selectedEntity) {
       return;
     }
@@ -97,7 +99,7 @@ Tool = {
     this.new(this.index);
   },
 
-  next: function() {
+  next: function () {
     if (!this.selectedEntity) {
       return;
     }
@@ -110,14 +112,14 @@ Tool = {
     this.new(this.index);
   },
 
-  clear: function() {
+  clear: function () {
     if (this.selectedEntity) {
       this.selectedEntity.parentNode.removeChild(this.selectedEntity);
       this.selectedEntity = null;
     }
   },
 
-  new: function(i) {
+  new: function (i) {
     if (!i) {
       i = this.index ? this.index : 0;
     }
@@ -142,7 +144,7 @@ Tool = {
     this.index = i;
   },
 
-  drop: function() {
+  drop: function () {
     if (!this.selectedEntity) {
       return;
     }
@@ -157,7 +159,7 @@ Tool = {
       x: 0,
       y: euler.y * (180 / Math.PI),
       z: 0
-    }
+    };
 
     // position
     var position = new THREE.Vector3();
@@ -182,6 +184,4 @@ Tool = {
       this.drop();
     }
   }
-}
-
-module.exports = Tool;
+};
