@@ -2,7 +2,7 @@
 Modify entity tool
 */
 Tool = {
-  name: 'Place',
+  name: 'Modify',
 
   start: function () {
     var scene = this.scene = document.querySelector('a-scene');

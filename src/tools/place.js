@@ -1,5 +1,5 @@
 /*
-New entity tool
+Place new entity tool
 */
 var colours = ['#DA6369', '#4191A6', '#5AA89A', '#5AA89A', '#F39C85'];
 
