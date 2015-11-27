@@ -34,11 +34,16 @@
     "semistandard": "^7.0.3",
     "snazzy": "^2.0.1"
   },
+  "dependencies": {
+    "@mozvr/aframe-core": "^0.0.0"
+  },
   "semistandard": {
     "ignore": [
       "build/**",
       "dist/**"
     ]
   },
-  "dependencies": {}
+  "dependencies": {
+    "@mozvr/vr-components": "^0.1.1"
+  }
 }

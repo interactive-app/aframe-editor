@@ -4,17 +4,19 @@
     <meta charset="utf-8">
     <title>Cube</title>
     <meta name="description" content="Cube">
-    <link rel="stylesheet" type="text/css" href="../../style/vr-markup.css">
-    <link rel="stylesheet" type="text/css" href="../_style/main.css">
-    <script src="https://mozvr.github.io/aframe/dist/vr-components.min.js"></script>
-
+    <!-- <link rel="stylesheet" type="text/css" href="../../style/vr-markup.css">
+    <link rel="stylesheet" type="text/css" href="../_style/main.css"> -->
+    <script src="../build/aframe-editor.js"></script>
+    <style>
+      body { background-color: black; }
+    </style>
   </head>
   <body>
-    <vr-scene stats="true">
+    <a-scene>
       <!-- Cube -->
-      <vr-object geometry="primitive: box" material="color: red"
-                 position="0 0 -20" rotation="0 45 0"></vr-object>
-    </vr-scene>
-    <script src="../dist/aframe-editor.js"></script>
+      <a-entity position="0 0 0" rotation="45 30 0"
+                geometry="primitive: box; height: 2; width: 2; depth: 2;"
+                material="color: #167341; roughness: 1.0; metalness: 0.2;"></a-entity>
+    </a-scene>
   </body>
 </html>
