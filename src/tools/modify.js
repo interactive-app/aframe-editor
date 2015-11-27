@@ -77,9 +77,8 @@ module.exports = {
   },
 
   pick: function () {
-    if (!this.currentIntersection) {
-      return;
-    }
+    if (!this.currentIntersection) { return; }
+
     var entity = this.currentIntersection.el;
     var distance = this.currentIntersection.distance;
     var clone = entity.cloneNode();
@@ -92,9 +91,8 @@ module.exports = {
   },
 
   drop: function () {
-    if (!this.selectedEntity) {
-      return;
-    }
+    if (!this.selectedEntity) { return; }
+
     var object3D = this.selectedEntity.object3D;
     object3D.updateMatrixWorld();
 

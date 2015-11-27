@@ -60,13 +60,14 @@ module.exports = {
   },
 
   setupCursor: function () {
-    this.cursor = document.createElement('a-entity');
-    this.cursor.setAttribute('id', 'editor-select-cursor');
-    this.cursor.setAttribute('position', '0 0 -10');
-    this.cursor.setAttribute('cursor', 'maxDistance: 30');
-    this.cursor.setAttribute('geometry', 'primitive: sphere; radius: 0.3');
-    this.cursor.setAttribute('material', 'color: green; receiveLight: false;');
-    this.camera.appendChild(this.cursor);
+    var cursor = this.cursor;
+    cursor = document.createElement('a-entity');
+    cursor.setAttribute('id', 'editor-select-cursor');
+    cursor.setAttribute('position', '0 0 -10');
+    cursor.setAttribute('cursor', 'maxDistance: 30');
+    cursor.setAttribute('geometry', 'primitive: sphere; radius: 0.3');
+    cursor.setAttribute('material', 'color: green; receiveLight: false;');
+    this.camera.appendChild(cursor);
   },
 
   removeCursor: function () {
@@ -86,11 +87,9 @@ module.exports = {
   },
 
   prev: function () {
-    if (!this.selectedEntity) {
-      return;
-    }
+    if (!this.selectedEntity) { return; }
 
-    this.index--;
+    this.index -= 1;
     if (this.index < 0) {
       this.index = primitives.length - 1;
     }
@@ -100,11 +99,9 @@ module.exports = {
   },
 
   next: function () {
-    if (!this.selectedEntity) {
-      return;
-    }
+    if (!this.selectedEntity) { return; }
 
-    this.index++;
+    this.index += 1;
     if (this.index > primitives.length - 1) {
       this.index = 0;
     }
@@ -145,9 +142,7 @@ module.exports = {
   },
 
   drop: function () {
-    if (!this.selectedEntity) {
-      return;
-    }
+    if (!this.selectedEntity) { return; }
     var object3D = this.selectedEntity.object3D;
     object3D.updateMatrixWorld();
 
