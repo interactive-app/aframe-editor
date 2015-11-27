@@ -26,10 +26,12 @@ module.exports = {
     this.onContextmenu = this.use.bind(this);
     this.onIntersection = this.handleIntersection.bind(this);
     this.onIntersectionClear = this.handleIntersectionClear.bind(this);
+    this.onMousewheel = this.handleMousewheel.bind(this);
 
     this.scene.canvas.addEventListener('contextmenu', this.onContextmenu);
     this.cursor.addEventListener('intersection', this.onIntersection);
     this.cursor.addEventListener('intersectioncleared', this.onIntersectionClear);
+    window.addEventListener('wheel', this.onMousewheel);
   },
 
   removeListeners: function () {
@@ -53,6 +55,19 @@ module.exports = {
     this.cursor = null;
   },
 
+  handleMousewheel: function (e) {
+    var entity = this.selectedEntity;
+
+    if (!entity) { return; }
+
+    var parent = entity.parentNode;
+    if (parent.hasAttribute('camera')) {
+      var position = entity.getAttribute('position');
+      position.z += e.deltaY;
+      entity.setAttribute('position', position);
+    }
+  },
+
   handleIntersection: function (e) {
     this.currentIntersection = e.detail;
   },
@@ -66,14 +81,11 @@ module.exports = {
       return;
     }
     var entity = this.currentIntersection.el;
-
     var distance = this.currentIntersection.distance;
     var clone = entity.cloneNode();
 
     clone.setAttribute('position', {x: 0, y: 0, z: -distance});
-
     this.camera.appendChild(clone);
-
     entity.parentNode.removeChild(entity);
 
     this.selectedEntity = clone;
