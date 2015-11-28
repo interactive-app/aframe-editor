@@ -1,5 +1,5 @@
-/* global THREE */
 var PropertiesPanel = require('./properties');
+
 /*
 Modify inspect tool
 */
