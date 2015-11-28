@@ -21,7 +21,7 @@ A easy to use editor for creating VR scenes using A-FRAME.
 
 * `space` Cycles through the different tools available.
 
-* `Right click` Uses the selected tool.
+* `Right click` Uses to use the selected tool.
 
 ### Tools
 
@@ -34,6 +34,19 @@ A easy to use editor for creating VR scenes using A-FRAME.
     *  Sphere shaped reticule -- adds new object to the scene. 
 
     *  `[` and `]` cycles through the different object primitives.
+
+
+## Working on the editor
+
+````
+git clone git@github.com:aframevr/aframe-editor.git
+cd aframe-editor
+npm install
+npm start
+````
+
+navigate to [http://localhost:8000](http://localhost:8000)
+
 
 ### Docs
 [V1 MVP Features and Ideas](https://docs.google.com/document/d/1b4L-mzBMUgyKRlb-MlWo42yy1vplaKLkFb2D7JDVKQA/edit)
