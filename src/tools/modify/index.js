@@ -1,5 +1,4 @@
 /* global THREE */
-
 /*
 Modify entity tool
 */
