@@ -35,7 +35,7 @@
     "snazzy": "^2.0.1"
   },
   "dependencies": {
-    "@mozvr/aframe-core": "^0.0.0"
+    "@mozvr/aframe": "^0.0.0"
   },
   "semistandard": {
     "ignore": [
