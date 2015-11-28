@@ -60,14 +60,13 @@ module.exports = {
   },
 
   setupCursor: function () {
-    var cursor = this.cursor;
-    cursor = document.createElement('a-entity');
-    cursor.setAttribute('id', 'editor-select-cursor');
-    cursor.setAttribute('position', '0 0 -10');
-    cursor.setAttribute('cursor', 'maxDistance: 30');
-    cursor.setAttribute('geometry', 'primitive: sphere; radius: 0.3');
-    cursor.setAttribute('material', 'color: green; receiveLight: false;');
-    this.camera.appendChild(cursor);
+    this.cursor = document.createElement('a-entity');
+    this.cursor.setAttribute('id', 'editor-place-cursor');
+    this.cursor.setAttribute('position', '0 0 -10');
+    this.cursor.setAttribute('cursor', 'maxDistance: 30');
+    this.cursor.setAttribute('geometry', 'primitive: sphere; radius: 0.3');
+    this.cursor.setAttribute('material', 'color: green; receiveLight: false;');
+    this.camera.appendChild(this.cursor);
   },
 
   removeCursor: function () {
