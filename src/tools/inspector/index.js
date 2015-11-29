@@ -1,22 +1,34 @@
 var AttributesPanel = require('./attributes');
+var ScenePanel = require('./scene');
 
 /*
-Modify inspect tool
+Inspector tool
 */
 module.exports = {
   name: 'Inspect',
 
   start: function () {
+    this.el = document.createElement('div');
+    this.el.className = 'editor-container';
+    document.body.appendChild(this.el);
+
     this.scene = document.querySelector('a-scene');
     this.camera = this.scene.cameraEl;
+
     this.attributesPanel = new AttributesPanel();
+    this.el.appendChild(this.attributesPanel.el);
+
+    this.scenePanel = new ScenePanel();
+    this.el.appendChild(this.scenePanel.el);
 
     this.setupCursor();
     this.addListeners();
   },
 
   end: function () {
+    this.el.parentNode.removeChild(this.el);
     this.attributesPanel.hide();
+    this.scenePanel.hide();
     this.removeListeners();
     this.removeCursor();
   },
@@ -42,7 +54,7 @@ module.exports = {
 
   setupCursor: function () {
     this.cursor = document.createElement('a-entity');
-    this.cursor.setAttribute('id', 'editor-inspect-cursor');
+    this.cursor.dataset.isEditor = true;
     this.cursor.setAttribute('position', '0 0 -10');
     this.cursor.setAttribute('cursor', 'maxDistance: 30');
     this.cursor.setAttribute('geometry', 'primitive: box; width: 0.3; height: 0.3; depth: 0.3');
@@ -75,6 +87,8 @@ module.exports = {
       // single attribute value
       entity.setAttribute(name, value);
     }
+
+    this.scenePanel.update();
   },
 
   pick: function () {

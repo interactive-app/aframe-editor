@@ -2,21 +2,18 @@ require('./index.css');
 
 function Panel () {
   this.visible = false;
+
+  this.el = document.createElement('div');
+  this.el.classList.add('editor-attributes');
 }
 
 Panel.prototype.show = function () {
-  var uiEl = document.createElement('div');
-  uiEl.classList.add('editor-attributes');
-  document.body.appendChild(uiEl);
-  this.panelEl = uiEl;
+  this.el.style.display = 'block';
   this.visible = true;
 };
 
 Panel.prototype.hide = function () {
-  if (!this.visible) {
-    return;
-  }
-  this.panelEl.parentNode.removeChild(this.panelEl);
+  this.el.style.display = 'none';
   this.visible = false;
 };
 
@@ -26,7 +23,7 @@ Panel.prototype.inspect = function (entity) {
   }
 
   // clear panel and create new form
-  this.panelEl.innerHTML = '';
+  this.el.innerHTML = '';
 
   this.makeForms(entity);
 };
@@ -121,7 +118,7 @@ Panel.prototype.makeForms = function (entity) {
 
     attributeForm.appendChild(inputsEl);
 
-    this.panelEl.appendChild(attributeForm);
+    this.el.appendChild(attributeForm);
   }.bind(this));
 };
 
