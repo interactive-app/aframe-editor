@@ -12,7 +12,7 @@ function Panel () {
 Panel.prototype.show = function () {
   this.el.style.display = 'block';
   this.visible = true;
-  this.makeSceneGraph();
+  this.update();
 };
 
 Panel.prototype.hide = function () {
@@ -28,8 +28,10 @@ Panel.prototype.makeEntity = function (entity, depth) {
   this.el.appendChild(div);
 };
 
-Panel.prototype.makeSceneGraph = function () {
+Panel.prototype.update = function () {
   var self = this;
+
+  this.el.innerHTML = null;
 
   function treeIterate (element, depth) {
     if (depth === undefined) {
@@ -41,7 +43,11 @@ Panel.prototype.makeSceneGraph = function () {
     var children = element.children;
     for (var i = 0; i < children.length; i++) {
       var child = children[i];
-      self.makeEntity(child, depth);
+
+      // filter out all entities added by editor
+      if (!child.dataset.isEditor) {
+        self.makeEntity(child, depth);
+      }
       treeIterate(child, depth);
     }
   }
