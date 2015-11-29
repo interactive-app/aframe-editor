@@ -42,8 +42,5 @@
       "build/**",
       "dist/**"
     ]
-  },
-  "dependencies": {
-    "@mozvr/vr-components": "^0.1.1"
   }
 }
