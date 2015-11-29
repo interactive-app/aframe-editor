@@ -1,4 +1,4 @@
-var PropertiesPanel = require('./properties');
+var AttributesPanel = require('./attributes');
 
 /*
 Modify inspect tool
@@ -12,14 +12,14 @@ module.exports = {
 
     this.setupCursor();
     this.addListeners();
-    this.propertiesPanel = new PropertiesPanel();
+    this.attributesPanel = new AttributesPanel();
   },
 
   end: function () {
     if (this.selectedEntity) {
       this.drop();
     }
-    this.propertiesPanel.hide();
+    this.attributesPanel.hide();
     this.removeListeners();
     this.removeCursor();
   },
@@ -65,12 +65,12 @@ module.exports = {
 
   pick: function () {
     if (!this.currentIntersection) {
-      this.propertiesPanel.hide();
+      this.attributesPanel.hide();
       return;
     }
 
     var entity = this.currentIntersection.el;
-    this.propertiesPanel.inspect(entity);
+    this.attributesPanel.inspect(entity);
   },
 
   use: function (e) {

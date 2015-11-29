@@ -1,4 +1,4 @@
-var css = require('./properties.css');
+var css = require('./index.css');
 console.log(css);
 
 function Panel () {
@@ -7,7 +7,7 @@ function Panel () {
 
 Panel.prototype.show = function () {
   var ui = document.createElement('div');
-  ui.style = 'z-index: 1000; position: absolute; right: 0px; top: 0px; background: rgba(255, 255, 255, 0.8)';
+  ui.classList.add('editor-attributes');
   document.body.appendChild(ui);
   this.panelEl = ui;
   this.visible = true;
@@ -39,7 +39,7 @@ Panel.prototype.createInputs = function (entity) {
   attributes.forEach(function (attribute) {
     // form
     var formEl = document.createElement('form');
-    formEl.classList.add('editor-property');
+    formEl.classList.add('editor-attributes--attribute');
 
     // atrribute name
     var attributeEl = document.createElement('input');
@@ -57,7 +57,7 @@ Panel.prototype.createInputs = function (entity) {
     for (var property in properties) {
       // property labels
       var propertyEl = document.createElement('input');
-      propertyEl.classList.add('editor-property--name');
+      propertyEl.classList.add('editor-attributes--name');
       propertyEl.type = 'text';
       propertyEl.name = attribute.name + '_' + property + '_prop';
       propertyEl.value = property;
@@ -65,7 +65,7 @@ Panel.prototype.createInputs = function (entity) {
 
       // values
       var valueEl = document.createElement('input');
-      propertyEl.classList.add('editor-property--value');
+      propertyEl.classList.add('editor-attributes--value');
       valueEl.type = 'text';
       valueEl.name = attribute.name + '_' + property + '_value';
       valueEl.value = properties[property];
