@@ -1,3 +1,6 @@
+var css = require('./properties.css');
+console.log(css);
+
 function Panel () {
   this.visible = false;
 }
@@ -25,23 +28,28 @@ Panel.prototype.inspect = function (entity) {
 
   // clear panel and create new form
   this.panelEl.innerHTML = '';
-  var formEl = document.createElement('form');
 
-  this.createInputs(entity, formEl);
-
-  this.panelEl.appendChild(formEl);
+  this.createInputs(entity);
 };
 
-Panel.prototype.createInputs = function (entity, form) {
+Panel.prototype.createInputs = function (entity) {
   // create input for each attribute
   var attributes = Array.prototype.slice.call(entity.attributes);
 
   attributes.forEach(function (attribute) {
-    // label for atrribute name
-    var labelEl = document.createElement('label');
-    labelEl.innerHTML = attribute.name;
+    // form
+    var formEl = document.createElement('form');
+    formEl.classList.add('editor-property');
 
-    labelEl.appendChild(document.createElement('br'));
+    // atrribute name
+    var attributeEl = document.createElement('input');
+    attributeEl.classList.add('attribute');
+    attributeEl.type = 'text';
+    attributeEl.name = attribute.name;
+    attributeEl.value = attribute.name;
+    formEl.appendChild(attributeEl);
+
+    formEl.appendChild(document.createElement('br'));
 
     // generate input for each property name and value pair
     var properties = entity.getAttribute(attribute.name);
@@ -49,23 +57,25 @@ Panel.prototype.createInputs = function (entity, form) {
     for (var property in properties) {
       // property labels
       var propertyEl = document.createElement('input');
+      propertyEl.classList.add('editor-property--name');
       propertyEl.type = 'text';
-      propertyEl.name = attribute.name + '_' + property;
+      propertyEl.name = attribute.name + '_' + property + '_prop';
       propertyEl.value = property;
-      labelEl.appendChild(propertyEl);
+      formEl.appendChild(propertyEl);
 
       // values
       var valueEl = document.createElement('input');
+      propertyEl.classList.add('editor-property--value');
       valueEl.type = 'text';
       valueEl.name = attribute.name + '_' + property + '_value';
       valueEl.value = properties[property];
-      labelEl.appendChild(valueEl);
+      formEl.appendChild(valueEl);
 
-      labelEl.appendChild(document.createElement('br'));
+      formEl.appendChild(document.createElement('br'));
     }
 
-    form.appendChild(labelEl);
-  });
+    this.panelEl.appendChild(formEl);
+  }.bind(this));
 };
 
 module.exports = Panel;
