@@ -26,8 +26,8 @@ Editor.prototype.setupControls = function () {
 
 // Floor
 Editor.prototype.makeFloor = function () {
-  var size = 20;
-  var tileSize = 5;
+  var size = 2;
+  var tileSize = 20;
   var tileSpacing = 0.1;
   var floorY = -1.5;
 

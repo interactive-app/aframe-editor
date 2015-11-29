@@ -8,3 +8,14 @@
 .editor-attributes--attribute {
   margin-bottom: 0.5rem;
 }
+
+.editor-scene {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.editor-scene--entity {
+  padding: 0.25rem;
+}

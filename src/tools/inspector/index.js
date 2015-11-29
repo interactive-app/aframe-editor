@@ -1,22 +1,32 @@
 var AttributesPanel = require('./attributes');
+var ScenePanel = require('./scene');
 
 /*
-Modify inspect tool
+Inspector tool
 */
 module.exports = {
   name: 'Inspect',
 
   start: function () {
+    this.panelsEl = document.createElement('div');
+    this.panelsEl.className = 'editor-container';
+    document.body.appendChild(this.panelsEl);
+
     this.scene = document.querySelector('a-scene');
     this.camera = this.scene.cameraEl;
     this.attributesPanel = new AttributesPanel();
+
+    this.scenePanel = new ScenePanel();
+    this.panelsEl.appendChild(this.scenePanel.panelEl);
 
     this.setupCursor();
     this.addListeners();
   },
 
   end: function () {
+    this.panelsEl.parentNode.removeChild(this.panelsEl);
     this.attributesPanel.hide();
+    this.scenePanel.hide();
     this.removeListeners();
     this.removeCursor();
   },
