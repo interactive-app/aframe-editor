@@ -15,9 +15,10 @@ module.exports = {
     this.scene = document.querySelector('a-scene');
     this.camera = this.scene.cameraEl;
     this.attributesPanel = new AttributesPanel();
+    this.panelsEl.appendChild(this.attributesPanel.el);
 
     this.scenePanel = new ScenePanel();
-    this.panelsEl.appendChild(this.scenePanel.panelEl);
+    this.panelsEl.appendChild(this.scenePanel.el);
 
     this.setupCursor();
     this.addListeners();

@@ -1,21 +1,19 @@
-.editor-attributes {
+.editor-container {
   position: absolute;
   right: 0;
   top: 0;
+}
+
+.editor-attributes, .editor-scene {
   background: rgba(255, 255, 255, 0.8);
+  float: right;
 }
 
 .editor-attributes--attribute {
   margin-bottom: 0.5rem;
 }
 
-.editor-scene {
-  position: absolute;
-  left: 0;
-  top: 0;
-  background: rgba(255, 255, 255, 0.8);
-}
 
 .editor-scene--entity {
-  padding: 0.25rem;
+  padding: 0.25rem 2rem 0.25rem 1rem;
 }
