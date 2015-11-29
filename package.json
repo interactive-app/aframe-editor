@@ -30,12 +30,21 @@
   "homepage": "https://github.com/caseyyee/aframe-editor#readme",
   "devDependencies": {
     "browserify": "^12.0.1",
+    "browserify-css": "^0.8.1",
     "budo": "^6.0.4",
     "semistandard": "^7.0.3",
     "snazzy": "^2.0.1"
   },
   "dependencies": {
     "@mozvr/aframe": "^0.0.0"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-css"
+    ]
+  },
+  "browserify-css": {
+    "minify": true
   },
   "semistandard": {
     "ignore": [
