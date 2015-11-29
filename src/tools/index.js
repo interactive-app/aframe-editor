@@ -1,5 +1,5 @@
 module.exports = [
+  require('./inspector'),
   require('./modify'),
-  require('./place'),
-  require('./inspector')
+  require('./place')
 ];

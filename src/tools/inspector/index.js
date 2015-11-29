@@ -9,16 +9,13 @@ module.exports = {
   start: function () {
     this.scene = document.querySelector('a-scene');
     this.camera = this.scene.cameraEl;
+    this.attributesPanel = new AttributesPanel();
 
     this.setupCursor();
     this.addListeners();
-    this.attributesPanel = new AttributesPanel();
   },
 
   end: function () {
-    if (this.selectedEntity) {
-      this.drop();
-    }
     this.attributesPanel.hide();
     this.removeListeners();
     this.removeCursor();
@@ -28,10 +25,13 @@ module.exports = {
     this.onContextmenu = this.use.bind(this);
     this.onIntersection = this.handleIntersection.bind(this);
     this.onIntersectionClear = this.handleIntersectionClear.bind(this);
+    this.onEntityChange = this.handleEntityChange.bind(this);
 
     this.scene.canvas.addEventListener('contextmenu', this.onContextmenu);
     this.cursor.addEventListener('intersection', this.onIntersection);
     this.cursor.addEventListener('intersectioncleared', this.onIntersectionClear);
+
+    this.attributesPanel.onEntityChange = this.onEntityChange;
   },
 
   removeListeners: function () {
@@ -63,13 +63,29 @@ module.exports = {
     this.currentIntersection = null;
   },
 
+  handleEntityChange: function (name, property, value) {
+    var entity = this.selectedEntity;
+
+    if (property) {
+      // multiple attribute properties
+      var properties = entity.getAttribute(name);
+      properties[property] = value;
+      entity.setAttribute(name, properties);
+    } else {
+      // single attribute value
+      entity.setAttribute(name, value);
+    }
+  },
+
   pick: function () {
     if (!this.currentIntersection) {
+      this.selectedEntity = null;
       this.attributesPanel.hide();
       return;
     }
 
     var entity = this.currentIntersection.el;
+    this.selectedEntity = entity;
     this.attributesPanel.inspect(entity);
   },
 

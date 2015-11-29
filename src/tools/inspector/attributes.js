@@ -1,5 +1,4 @@
-var css = require('./index.css');
-console.log(css);
+require('./index.css');
 
 function Panel () {
   this.visible = false;
@@ -34,44 +33,67 @@ Panel.prototype.inspect = function (entity) {
 
 Panel.prototype.makeInput = function (properties) {
   var inputEl = document.createElement('input');
-  inputEl.type = 'text';
-  inputEl.name = properties.name;
-  inputEl.value = properties.value;
+
+  function addDataAttribute (el, properties) {
+    for (var prop in properties) {
+      el.dataset[prop] = properties[prop];
+    }
+  }
+
+  for (var prop in properties) {
+    inputEl[prop] = properties[prop];
+    if (prop === 'data') {
+      addDataAttribute(inputEl, properties[prop]);
+    }
+  }
+
   return inputEl;
 };
 
+/**
+ * Makes form inputs fields for each attribute properties.
+ */
 Panel.prototype.makePropertyInputs = function (attributeName, properties) {
-  var div = document.createElement('div');
+  var container = document.createElement('div');
+
   if (typeof properties === 'object') {
-    // multiple properties
+    // attribute has multiple properties.
     for (var property in properties) {
-      // property names
-      div.appendChild(this.makeInput({
-        name: attributeName + '_' + property + '_prop',
+      // create input for each property name
+      container.appendChild(this.makeInput({
         value: property,
-        class: 'editor-attributes--name'
+        data: {
+          isName: true,
+          attributeName: attributeName,
+          attributeProperty: property
+        }
       }));
 
-      // property values
-      div.appendChild(this.makeInput({
-        name: attributeName + '_' + property + '_value',
+      // create input each property value
+      container.appendChild(this.makeInput({
         value: properties[property],
-        class: 'editor-attributes--value'
+        data: {
+          isValue: true,
+          attributeName: attributeName,
+          attributeProperty: property
+        }
       }));
 
-      div.appendChild(document.createElement('br'));
+      container.appendChild(document.createElement('br'));
     }
   } else if (typeof properties === 'string') {
     // single property value
-    div.appendChild(this.makeInput({
-      name: attributeName + '_value',
+    container.appendChild(this.makeInput({
       value: properties,
-      class: 'editor-attributes--value'
+      data: {
+        isValue: true,
+        attributeName: attributeName
+      }
     }));
 
-    div.appendChild(document.createElement('br'));
+    container.appendChild(document.createElement('br'));
   }
-  return div;
+  return container;
 };
 
 Panel.prototype.makeForms = function (entity) {
@@ -82,24 +104,42 @@ Panel.prototype.makeForms = function (entity) {
     // edit form
     var attributeForm = document.createElement('form');
     attributeForm.classList.add('editor-attributes--attribute');
+    attributeForm.addEventListener('change', this.onAttributeChange.bind(this));
 
     // atrribute name
-    var attributeNameInput = document.createElement('input');
-    attributeNameInput.classList.add('attribute');
-    attributeNameInput.type = 'text';
-    attributeNameInput.name = attribute.name;
-    attributeNameInput.value = attribute.name;
-    attributeForm.appendChild(attributeNameInput);
+    var nameInput = this.makeInput({
+      name: attribute.name,
+      value: attribute.name,
+      class: 'attribute'
+    });
+    attributeForm.appendChild(nameInput);
     attributeForm.appendChild(document.createElement('br'));
 
     // generate inputs for each attribute property.
     var properties = entity.getAttribute(attribute.name);
-    var inputsEl = this.makePropertyInputs(attribute.name, properties, attributeForm);
+    var inputsEl = this.makePropertyInputs(attribute.name, properties);
 
     attributeForm.appendChild(inputsEl);
 
     this.panelEl.appendChild(attributeForm);
   }.bind(this));
+};
+
+Panel.prototype.onAttributeChange = function (e) {
+  var target = e.target;
+  var value = e.target.value;
+  var dataset = target.dataset;
+
+  // handle value changes
+  if (dataset.isValue) {
+    var attributeName = dataset.attributeName;
+    var attributeProperty = dataset.attributeProperty;
+
+    // fire change callback
+    if (this.onEntityChange) {
+      this.onEntityChange(attributeName, attributeProperty, value);
+    }
+  }
 };
 
 module.exports = Panel;
