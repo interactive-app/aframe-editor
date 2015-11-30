@@ -53,7 +53,7 @@ Editor.prototype.makeFloor = function () {
     }
   }
 
-  var offset = (size / 2) * (tileSize + tileSpacing);
+  var offset = (size / 2) * ((tileSize + tileSpacing) / 2);
 
   floor.setAttribute('position', {
     x: -offset,
