@@ -1,5 +1,5 @@
-var AttributesPanel = require('./attributes');
-var ScenePanel = require('./scene');
+var AttributesPanel = require('../panels/attributes');
+var ScenePanel = require('../panels/scene');
 
 /*
 Inspector tool
@@ -68,7 +68,6 @@ module.exports = {
   },
 
   handleIntersection: function (e) {
-    console.log(e);
     this.currentIntersection = e.detail;
   },
 
