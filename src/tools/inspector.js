@@ -1,6 +1,4 @@
-var AttributesPanel = require('./attributes');
-var ScenePanel = require('./scene');
-
+/* global aframeEditor */
 /*
 Inspector tool
 */
@@ -8,25 +6,19 @@ module.exports = {
   name: 'Inspect',
 
   start: function () {
-    this.el = document.createElement('div');
-    this.el.className = 'editor-container';
-    document.body.appendChild(this.el);
-
     this.scene = document.querySelector('a-scene');
     this.camera = this.scene.cameraEl;
 
-    this.attributesPanel = new AttributesPanel();
-    this.el.appendChild(this.attributesPanel.el);
-
-    this.scenePanel = new ScenePanel();
-    this.el.appendChild(this.scenePanel.el);
+    this.attributesPanel = aframeEditor.editor.panels.attributesPanel;
+    this.attributesPanel.show();
+    this.scenePanel = aframeEditor.editor.panels.scenePanel;
+    this.scenePanel.show();
 
     this.setupCursor();
     this.addListeners();
   },
 
   end: function () {
-    this.el.parentNode.removeChild(this.el);
     this.attributesPanel.hide();
     this.scenePanel.hide();
     this.removeListeners();
@@ -34,7 +26,7 @@ module.exports = {
   },
 
   addListeners: function () {
-    this.onContextmenu = this.use.bind(this);
+    this.onContextmenu = this.pick.bind(this);
     this.onIntersection = this.handleIntersection.bind(this);
     this.onIntersectionClear = this.handleIntersectionClear.bind(this);
     this.onEntityChange = this.handleEntityChange.bind(this);
@@ -55,10 +47,10 @@ module.exports = {
   setupCursor: function () {
     this.cursor = document.createElement('a-entity');
     this.cursor.dataset.isEditor = true;
-    this.cursor.setAttribute('position', '0 0 -10');
-    this.cursor.setAttribute('cursor', 'maxDistance: 30');
-    this.cursor.setAttribute('geometry', 'primitive: box; width: 0.3; height: 0.3; depth: 0.3');
+    this.cursor.setAttribute('position', '0 0 -5');
+    this.cursor.setAttribute('geometry', 'primitive: ring; outerRadius: 0.3; innerRadius: 0.2');
     this.cursor.setAttribute('material', 'color: yellow; receiveLight: false;');
+    this.cursor.setAttribute('cursor', 'maxDistance: 30');
     this.camera.appendChild(this.cursor);
   },
 
@@ -91,7 +83,8 @@ module.exports = {
     this.scenePanel.update();
   },
 
-  pick: function () {
+  pick: function (e) {
+    e.preventDefault();
     if (!this.currentIntersection) {
       this.selectedEntity = null;
       this.attributesPanel.hide();
@@ -101,10 +94,5 @@ module.exports = {
     var entity = this.currentIntersection.el;
     this.selectedEntity = entity;
     this.attributesPanel.inspect(entity);
-  },
-
-  use: function (e) {
-    e.preventDefault();
-    this.pick();
   }
 };

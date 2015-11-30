@@ -1,11 +1,14 @@
-var ToolBox = require('./toolBox');
+var Toolbox = require('./toolbox');
+var Panels = require('./panels');
 
 function Editor () {
-  this.toolBox = new ToolBox();
   document.addEventListener('DOMContentLoaded', this.onDomLoaded.bind(this));
 }
 
 Editor.prototype.onDomLoaded = function () {
+  this.toolBox = new Toolbox();
+  this.panels = new Panels();
+
   this.scene = document.querySelector('a-scene');
   this.camera = this.scene.cameraEl;
 
@@ -53,7 +56,7 @@ Editor.prototype.makeFloor = function () {
     }
   }
 
-  var offset = (size / 2) * (tileSize + tileSpacing);
+  var offset = (size / 2) * ((tileSize + tileSpacing) / 2);
 
   floor.setAttribute('position', {
     x: -offset,
