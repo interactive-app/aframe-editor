@@ -34,7 +34,7 @@ module.exports = {
   },
 
   addListeners: function () {
-    this.onContextmenu = this.use.bind(this);
+    this.onContextmenu = this.pick.bind(this);
     this.onIntersection = this.handleIntersection.bind(this);
     this.onIntersectionClear = this.handleIntersectionClear.bind(this);
     this.onEntityChange = this.handleEntityChange.bind(this);
@@ -55,10 +55,10 @@ module.exports = {
   setupCursor: function () {
     this.cursor = document.createElement('a-entity');
     this.cursor.dataset.isEditor = true;
-    this.cursor.setAttribute('position', '0 0 -10');
-    this.cursor.setAttribute('cursor', 'maxDistance: 30');
+    this.cursor.setAttribute('position', '0 0 -5');
     this.cursor.setAttribute('geometry', 'primitive: box; width: 0.3; height: 0.3; depth: 0.3');
     this.cursor.setAttribute('material', 'color: yellow; receiveLight: false;');
+    this.cursor.setAttribute('cursor', 'maxDistance: 30');
     this.camera.appendChild(this.cursor);
   },
 
@@ -68,6 +68,7 @@ module.exports = {
   },
 
   handleIntersection: function (e) {
+    console.log(e);
     this.currentIntersection = e.detail;
   },
 
@@ -91,7 +92,8 @@ module.exports = {
     this.scenePanel.update();
   },
 
-  pick: function () {
+  pick: function (e) {
+    e.preventDefault();
     if (!this.currentIntersection) {
       this.selectedEntity = null;
       this.attributesPanel.hide();
@@ -101,10 +103,5 @@ module.exports = {
     var entity = this.currentIntersection.el;
     this.selectedEntity = entity;
     this.attributesPanel.inspect(entity);
-  },
-
-  use: function (e) {
-    e.preventDefault();
-    this.pick();
   }
 };
