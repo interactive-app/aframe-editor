@@ -56,7 +56,7 @@ module.exports = {
     this.cursor = document.createElement('a-entity');
     this.cursor.dataset.isEditor = true;
     this.cursor.setAttribute('position', '0 0 -5');
-    this.cursor.setAttribute('geometry', 'primitive: box; width: 0.3; height: 0.3; depth: 0.3');
+    this.cursor.setAttribute('geometry', 'primitive: ring; outerRadius: 0.3; innerRadius: 0.2');
     this.cursor.setAttribute('material', 'color: yellow; receiveLight: false;');
     this.cursor.setAttribute('cursor', 'maxDistance: 30');
     this.camera.appendChild(this.cursor);
