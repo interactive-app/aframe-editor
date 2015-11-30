@@ -1,9 +1,10 @@
-.editor-container {
+.editor-right-container {
   position: absolute;
   right: 0;
   top: 0;
 }
 
+/* attributes panel */
 .editor-attributes, .editor-scene {
   background: rgba(255, 255, 255, 0.8);
   float: right;
@@ -14,6 +15,19 @@
 }
 
 
+/* scene graph panel */
 .editor-scene--entity {
   padding: 0.25rem 2rem 0.25rem 1rem;
+}
+
+
+/* Toolbar */
+.editor-tools {
+  position: absolute;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.editor-tools button {
+  float: left;
 }

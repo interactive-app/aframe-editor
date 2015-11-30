@@ -1,4 +1,3 @@
-var Toolbox = require('./toolbox');
 var Panels = require('./panels');
 
 function Editor () {
@@ -6,25 +5,13 @@ function Editor () {
 }
 
 Editor.prototype.onDomLoaded = function () {
-  this.toolBox = new Toolbox();
+  this.tools = require('./tools');
   this.panels = new Panels();
 
   this.scene = document.querySelector('a-scene');
   this.camera = this.scene.cameraEl;
 
-  this.setupControls();
   this.makeFloor();
-};
-
-// Controls
-Editor.prototype.setupControls = function () {
-  window.addEventListener('keypress', function (e) {
-    switch (e.charCode) {
-      case 32: // space
-        this.toolBox.toggle();
-        break;
-    }
-  }.bind(this));
 };
 
 // Floor

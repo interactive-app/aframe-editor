@@ -6,7 +6,7 @@ var ToolPanel = require('./panels/tools');
 
 function Panels () {
   var el = document.createElement('div');
-  el.className = 'editor-container';
+  el.className = 'editor-right-container';
 
   this.attributesPanel = new AttributesPanel();
   el.appendChild(this.attributesPanel.el);
@@ -15,7 +15,7 @@ function Panels () {
   el.appendChild(this.scenePanel.el);
 
   this.toolPanel = new ToolPanel();
-  el.appendChild(this.toolPanel.el);
+  document.body.appendChild(this.toolPanel.el);
 
   document.body.appendChild(el);
 }
