@@ -1,6 +1,6 @@
 var tools = require('./tools');
 
-function ToolBox () {
+function Toolbox () {
   // current selected tool
   this.tool = null;
 }
@@ -8,7 +8,7 @@ function ToolBox () {
 /*
 Cycles through available tools
 */
-ToolBox.prototype.toggle = function () {
+Toolbox.prototype.toggle = function () {
   if (!this.tool) {
     this.tool = tools[0]; // select first tool (default)
   }
@@ -32,4 +32,4 @@ ToolBox.prototype.toggle = function () {
   }
 };
 
-module.exports = ToolBox;
+module.exports = Toolbox;

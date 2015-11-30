@@ -1,6 +1,4 @@
-var AttributesPanel = require('../panels/attributes');
-var ScenePanel = require('../panels/scene');
-
+/* global aframeEditor */
 /*
 Inspector tool
 */
@@ -8,25 +6,19 @@ module.exports = {
   name: 'Inspect',
 
   start: function () {
-    this.el = document.createElement('div');
-    this.el.className = 'editor-container';
-    document.body.appendChild(this.el);
-
     this.scene = document.querySelector('a-scene');
     this.camera = this.scene.cameraEl;
 
-    this.attributesPanel = new AttributesPanel();
-    this.el.appendChild(this.attributesPanel.el);
-
-    this.scenePanel = new ScenePanel();
-    this.el.appendChild(this.scenePanel.el);
+    this.attributesPanel = aframeEditor.editor.panels.attributesPanel;
+    this.attributesPanel.show();
+    this.scenePanel = aframeEditor.editor.panels.scenePanel;
+    this.scenePanel.show();
 
     this.setupCursor();
     this.addListeners();
   },
 
   end: function () {
-    this.el.parentNode.removeChild(this.el);
     this.attributesPanel.hide();
     this.scenePanel.hide();
     this.removeListeners();

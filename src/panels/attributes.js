@@ -1,5 +1,3 @@
-require('./index.css');
-
 function Panel () {
   this.visible = false;
 
