@@ -3,8 +3,6 @@ function Panel () {
 
   this.el = document.createElement('div');
   this.el.classList.add('editor-scene');
-
-  this.show();
 }
 
 Panel.prototype.show = function () {
