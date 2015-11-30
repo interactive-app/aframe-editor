@@ -15,27 +15,6 @@ A easy to use editor for creating VR scenes using A-FRAME.
 ````
 
 
-## Using the editor
-
-### Using the editor
-
-* `space` Cycles through the different tools available.
-
-* `Right click` Uses to use the selected tool.
-
-### Tools
-
-* _Modify Object_ 
-
-    *  Donut shaped reticule -- modifies position of object in scene.
-
-* _Add Object_ 
-
-    *  Sphere shaped reticule -- adds new object to the scene. 
-
-    *  `[` and `]` cycles through the different object primitives.
-
-
 ## Working on the editor
 
 ````
