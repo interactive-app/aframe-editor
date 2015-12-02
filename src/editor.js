@@ -1,57 +1,35 @@
+/* global THREE */
 var Panels = require('./panels');
 
 function Editor () {
   document.addEventListener('DOMContentLoaded', this.onDomLoaded.bind(this));
 }
 
-Editor.prototype.onDomLoaded = function () {
-  this.tools = require('./tools');
-  this.panels = new Panels();
+Editor.prototype = {
 
-  this.scene = document.querySelector('a-scene');
-  this.camera = this.scene.cameraEl;
+  onDomLoaded: function () {
+    this.tools = require('./tools');
+    this.panels = new Panels();
 
-  this.makeFloor();
-};
+    this.scene = document.querySelector('a-scene');
+    this.camera = this.scene.cameraEl;
 
-// Floor
-Editor.prototype.makeFloor = function () {
-  var size = 2;
-  var tileSize = 20;
-  var tileSpacing = 0.1;
-  var floorY = -1.5;
+    this.scene.addEventListener('loaded', this.initUI.bind(this));
+  },
 
-  var floor = document.createElement('a-entity');
-  floor.id = 'floor';
+  initUI: function () {
+    this.scene3D = this.scene.object3D;
+    this.initHelpers();
+  },
 
-  for (var c = 0; c < size; c++) {
-    for (var r = 0; r < size; r++) {
-      var plane = document.createElement('a-entity');
-      plane.setAttribute('geometry', 'primitive: plane; width: ' + tileSize + '; height: ' + tileSize);
-      plane.setAttribute('material', 'color: #111111');
-      plane.setAttribute('rotation', '-90 0 0');
+  initHelpers: function () {
+    this.sceneHelpers = new THREE.Group(); // Scene
+    this.scene3D.add(this.sceneHelpers);
 
-      var position = {
-        x: (tileSpacing + tileSize) * c,
-        y: 0,
-        z: (tileSpacing + tileSize) * r
-      };
-
-      plane.setAttribute('position', position);
-
-      floor.appendChild(plane);
-    }
+    // Grid
+    var grid = new THREE.GridHelper(10, 1);
+    this.sceneHelpers.add(grid);
   }
-
-  var offset = (size / 2) * ((tileSize + tileSpacing) / 2);
-
-  floor.setAttribute('position', {
-    x: -offset,
-    y: floorY,
-    z: -offset
-  });
-
-  this.scene.appendChild(floor);
 };
 
 module.exports = new Editor();
