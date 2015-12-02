@@ -67,7 +67,6 @@ Editor.prototype = {
 
     this.signals.objectSelected.dispatch( object );
   },
-
 };
 
 module.exports = new Editor();
