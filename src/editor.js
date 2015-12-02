@@ -13,11 +13,12 @@ Editor.prototype = {
 
     this.scene = document.querySelector('a-scene');
     this.camera = this.scene.cameraEl;
-    
-    if (this.scene.hasLoaded)
+
+    if (this.scene.hasLoaded) {
       this.initUI();
-    else
+    } else {
       this.scene.addEventListener('loaded', this.initUI.bind(this));
+    }
   },
 
   initUI: function () {
