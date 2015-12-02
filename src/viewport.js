@@ -31,6 +31,10 @@ function Viewport(editor) {
 
 	} );
 	
+	signals.objectChanged.add( function(){
+		selectionBox.update(editor.selected);
+	});
+
 
 }
 

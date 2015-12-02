@@ -2,6 +2,7 @@
 var Panels = require('./panels');
 var Signals = require('signals');
 var Viewport = require('./viewport');
+var Helpers = require('./helpers');
 var THREE = require('@mozvr/aframe').aframeCore.THREE;
 
 function Editor () {
@@ -25,33 +26,25 @@ Editor.prototype = {
     this.signals = {
       sceneGraphChanged: new Signals.Signal(),
       objectSelected: new Signals.Signal(),
-      entitySelected: new Signals.Signal()
+      entitySelected: new Signals.Signal(),
+      objectChanged: new Signals.Signal()
     }
 
-    this.signals.entitySelected.add(function(entity){
+    this.signals.entitySelected.add((function(entity){
       this.selectedEntity = entity;
       if (entity)
-        this.signals.objectSelected.dispatch(entity.object3D);
+        this.select(entity.object3D);
       else
-        this.signals.objectSelected.dispatch(null);
-    });
+        this.select(null);
+    }).bind(this));
 
+    this.selected=null;
     this.panels = new Panels(this);
     this.scene = this.sceneEl.object3D;
-    this.initHelpers();
+    this.helpers = new Helpers(this);
     
     this.viewport = new Viewport( this );
 
-  },
-
-  initHelpers: function () {
-
-    this.sceneHelpers = new THREE.Group(); // Scene
-    this.scene.add(this.sceneHelpers);
-
-    // Grid
-    var grid = new THREE.GridHelper(10, 1);
-    this.sceneHelpers.add(grid);
   },
 
   selectById: function(id) {

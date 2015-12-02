@@ -34,8 +34,6 @@ module.exports = {
     this.scene.canvas.addEventListener('contextmenu', this.onContextmenu);
     this.cursor.addEventListener('intersection', this.onIntersection);
     this.cursor.addEventListener('intersectioncleared', this.onIntersectionClear);
-
-    //!!this.attributesPanel.onEntityChange = this.onEntityChange;
   },
 
   removeListeners: function () {
@@ -88,12 +86,10 @@ module.exports = {
     if (!this.currentIntersection) {
       this.selectedEntity = null;
       aframeEditor.editor.signals.entitySelected.dispatch(null);
-      //!!this.attributesPanel.hide();
       return;
     }
 
     var entity = this.currentIntersection.el;
     aframeEditor.editor.signals.entitySelected.dispatch(entity);
-    //!!this.attributesPanel.inspect(entity);
   }
 };
