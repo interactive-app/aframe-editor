@@ -27,6 +27,8 @@
   },
   "dependencies": {
     "@mozvr/aframe-core": "0.0.2"
+    "signals": "^1.0.0",
+    "sortablejs": "^1.4.2"
   },
   "scripts": {
     "start": "npm run dev",

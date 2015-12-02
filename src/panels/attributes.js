@@ -1,20 +1,4 @@
-function Panel () {
-  this.visible = false;
-
-  this.el = document.createElement('div');
-  this.el.classList.add('editor-attributes');
-}
-
-Panel.prototype.show = function () {
-  this.el.style.display = 'block';
-  this.visible = true;
-};
-
-Panel.prototype.hide = function () {
-  this.el.style.display = 'none';
-  this.visible = false;
-};
-
+/*
 Panel.prototype.inspect = function (entity) {
   if (!this.visible) {
     this.show();
@@ -45,9 +29,6 @@ Panel.prototype.makeInput = function (properties) {
   return inputEl;
 };
 
-/**
- * Makes form inputs fields for each attribute properties.
- */
 Panel.prototype.makePropertyInputs = function (attributeName, properties) {
   var container = document.createElement('div');
 
@@ -137,4 +118,7 @@ Panel.prototype.onAttributeChange = function (e) {
   }
 };
 
+*/
+
+var Panel={};
 module.exports = Panel;

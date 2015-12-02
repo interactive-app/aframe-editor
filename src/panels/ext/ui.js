@@ -2,10 +2,9 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-var Sortable = require('./sortable.min.js');
+var Sortable = require('sortablejs');
 
 var UI = {};
-
 
 UI.Element = function ( dom ) {
 
@@ -95,6 +94,20 @@ UI.Element.prototype = {
 
 		return this;
 
+	},
+
+	show: function () {
+
+  		this.dom.style.display = 'block';
+  		this.visible = true;
+
+	},
+
+	hide: function () {
+
+  		this.dom.style.display = 'none';
+  		this.visible = false;
+  		
 	},
 
 	setDisabled: function ( value ) {
@@ -1341,10 +1354,4 @@ UI.THREE.Boolean.prototype.setValue = function ( value ) {
 
 };
 
-
-
-
 module.exports = UI;
-
-
-

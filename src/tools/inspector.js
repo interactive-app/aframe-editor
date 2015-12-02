@@ -9,18 +9,18 @@ module.exports = {
     this.scene = document.querySelector('a-scene');
     this.camera = this.scene.cameraEl;
 
-    this.attributesPanel = aframeEditor.editor.panels.attributesPanel;
-    this.attributesPanel.show();
-    this.scenePanel = aframeEditor.editor.panels.scenePanel;
-    this.scenePanel.show();
+    //!!this.attributesPanel = aframeEditor.editor.panels.attributesPanel;
+    //!!this.attributesPanel.show();
+    this.sidebar = aframeEditor.editor.panels.sidebar;
+    this.sidebar.show();
 
     this.setupCursor();
     this.addListeners();
   },
 
   end: function () {
-    this.attributesPanel.hide();
-    this.scenePanel.hide();
+    //!!this.attributesPanel.hide();
+    this.sidebar.hide();
     this.removeListeners();
     this.removeCursor();
   },
@@ -35,7 +35,7 @@ module.exports = {
     this.cursor.addEventListener('intersection', this.onIntersection);
     this.cursor.addEventListener('intersectioncleared', this.onIntersectionClear);
 
-    this.attributesPanel.onEntityChange = this.onEntityChange;
+    //!!this.attributesPanel.onEntityChange = this.onEntityChange;
   },
 
   removeListeners: function () {
@@ -80,19 +80,20 @@ module.exports = {
       entity.setAttribute(name, value);
     }
 
-    this.scenePanel.update();
+    this.sidebar.update();
   },
 
   pick: function (e) {
     e.preventDefault();
     if (!this.currentIntersection) {
       this.selectedEntity = null;
-      this.attributesPanel.hide();
+      aframeEditor.editor.signals.entitySelected.dispatch(null);
+      //!!this.attributesPanel.hide();
       return;
     }
 
     var entity = this.currentIntersection.el;
-    this.selectedEntity = entity;
-    this.attributesPanel.inspect(entity);
+    aframeEditor.editor.signals.entitySelected.dispatch(entity);
+    //!!this.attributesPanel.inspect(entity);
   }
 };
