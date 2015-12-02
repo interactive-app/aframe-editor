@@ -14,7 +14,13 @@ Editor.prototype = {
     this.tools = require('./tools');
     this.sceneEl = document.querySelector('a-scene');
 
-    this.sceneEl.addEventListener('loaded', this.initUI.bind(this));
+    this.scene = document.querySelector('a-scene');
+    this.camera = this.scene.cameraEl;
+
+    if (this.scene.hasLoaded)
+      this.initUI();
+    else
+      this.scene.addEventListener('loaded', this.initUI.bind(this));
   },
 
   initUI: function () {
