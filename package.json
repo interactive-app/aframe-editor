@@ -2,19 +2,15 @@
   "name": "aframe-editor",
   "version": "0.0.1",
   "description": "Easy to use scene editor for a-frame",
+  "license": "MIT",
   "main": "build/aframe-editor.js",
-  "scripts": {
-    "start": "npm run dev",
-    "dev": "npm run build && node ./scripts/budo",
-    "build": "mkdir -p build/ && npm run browserify -- --debug -o build/aframe-editor.js",
-    "dist": "mkdir -p dist/ && npm run browserify -- --debug -o dist/aframe-editor.js",
-    "browserify": "browserify src/index.js -s 'aframe-editor'",
-    "lint": "semistandard -v $(git ls-files '*.js') | snazzy",
-    "precommit": "npm run lint"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/caseyyee/aframe-editor.git"
+    "url": "git+https://github.com/aframevr/aframe-editor.git"
+  },
+  "homepage": "https://github.com/aframevr/aframe-editor",
+  "bugs": {
+    "url": "https://github.com/aframevr/aframe-editor/issues"
   },
   "keywords": [
     "vr",
@@ -22,12 +18,6 @@
     "editor",
     "webvr"
   ],
-  "author": "Casey Yee",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/caseyyee/aframe-editor/issues"
-  },
-  "homepage": "https://github.com/caseyyee/aframe-editor#readme",
   "devDependencies": {
     "browserify": "^12.0.1",
     "browserify-css": "^0.8.1",
@@ -37,6 +27,15 @@
   },
   "dependencies": {
     "@mozvr/aframe-core": "0.0.2"
+  },
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "npm run build && node ./scripts/budo",
+    "build": "mkdir -p build/ && npm run browserify -- --debug -o build/aframe-editor.js",
+    "dist": "mkdir -p dist/ && npm run browserify -- --debug -o dist/aframe-editor.js",
+    "browserify": "browserify src/index.js -s 'aframe-editor'",
+    "lint": "semistandard -v $(git ls-files '*.js') | snazzy",
+    "precommit": "npm run lint"
   },
   "browserify": {
     "transform": [
