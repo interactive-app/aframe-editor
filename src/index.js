@@ -1,4 +1,4 @@
-var aframe = require('@mozvr/aframe');
+var aframe = require('@mozvr/aframe-core');
 var editor = require('./editor.js');
 
 module.exports = {
