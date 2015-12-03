@@ -821,6 +821,7 @@ UI.Number.prototype.setValue = function ( value ) {
 
 	if ( value !== undefined ) {
 
+		value = parseFloat(value);
 		this.value = value;
 		this.dom.value = value.toFixed( this.precision );
 
