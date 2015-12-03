@@ -44,7 +44,7 @@ module.exports = {
     this.cursor.setAttribute('id', 'editor-select-cursor');
     this.cursor.setAttribute('position', '0 0 -10');
     this.cursor.setAttribute('cursor', 'maxDistance: 30');
-    this.cursor.setAttribute('geometry', 'primitive: ring; outerRadius: 0.30; innerRadius: 0.20;');
+    this.cursor.setAttribute('geometry', 'primitive: ring; radiusOuter: 0.3; radiusInner: 0.2');
     this.cursor.setAttribute('material', 'color: red; receiveLight: false;');
     this.camera.appendChild(this.cursor);
   },

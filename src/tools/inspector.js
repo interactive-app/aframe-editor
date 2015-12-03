@@ -47,8 +47,8 @@ module.exports = {
   setupCursor: function () {
     this.cursor = document.createElement('a-entity');
     this.cursor.dataset.isEditor = true;
-    this.cursor.setAttribute('position', '0 0 -5');
-    this.cursor.setAttribute('geometry', 'primitive: ring; outerRadius: 0.3; innerRadius: 0.2');
+    this.cursor.setAttribute('position', '0 0 -10');
+    this.cursor.setAttribute('geometry', 'primitive: ring; radiusOuter: 0.3; radiusInner: 0.2');
     this.cursor.setAttribute('material', 'color: yellow; receiveLight: false;');
     this.cursor.setAttribute('cursor', 'maxDistance: 30');
     this.camera.appendChild(this.cursor);
