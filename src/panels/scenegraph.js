@@ -12,12 +12,8 @@ function SceneGraph (editor) {
 
 	var outliner = new UI.Outliner( editor );
 	outliner.onChange( function () {
-
 		ignoreObjectSelectedSignal = true;
-
 		aframeEditor.editor.signals.entitySelected.dispatch(outliner.getValue());
-		//editor.selectById( parseInt( outliner.getValue() ) );
-
 		ignoreObjectSelectedSignal = false;
 	} );
 	outliner.onDblClick( function () {

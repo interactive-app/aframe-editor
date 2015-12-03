@@ -9,7 +9,6 @@ function Sidebar (editor) {
 
 	this.sceneGraph = new SceneGraph(editor);
 	this.properties = new Properties(editor);
-//	this.properties.hide();
 
 	var scene = new UI.Span().add(
 		this.sceneGraph,

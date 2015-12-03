@@ -9,16 +9,8 @@ var Sidebar = require('./sidebar.js');
 
 function Panels (editor) {
 
-	var el = document.createElement('div');
-	el.className = 'editor-right-container';
-
-	//this.attributesPanel = new AttributesPanel();
-	//el.appendChild(this.attributesPanel.el);
-
 	this.toolPanel = new ToolPanel();
 	document.body.appendChild(this.toolPanel.el);
-
-	document.body.appendChild(el);
 
 	this.sidebar = new Sidebar(editor);
 	this.sidebar.hide();

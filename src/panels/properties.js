@@ -21,8 +21,39 @@ function Properties (editor) {
 	container.setPaddingTop( '20px' );
 	container.setDisplay( 'none' );
 
+	widgets = {};
+	function addAttribute(componentName, attributeName, property, type) {
+		
+		var widget = null;
+		switch (type) {
+			case "checkbox":
+				widget =new UI.Checkbox();
+				break;
+			case "number":
+				widget =new UI.Number();
+				break;
+			case "input":
+				widget =new UI.Input("");
+				break;
+			case "color":
+				widget =new UI.Color();
+				break;
+			default:
+				console.warn(componentName, attributeName, property, type);
+				widget =new UI.Input("");
+		}
 
-	this.widgets = {};
+		widget.setWidth( '50px' ).onChange(function(event){
+			update(event, componentName, attributeName, property);
+		});
+
+		var id = attributeName ? componentName+"."+attributeName+"."+property: componentName+"."+property;
+		widgets[id] = widget;
+
+		return widget;
+	}
+
+
 
 	// type
 
@@ -53,9 +84,9 @@ function Properties (editor) {
 
 
 	var objectPositionRow = new UI.Row();
-	var objectPositionX = new UI.Number().setWidth( '50px' ).onChange( update );
-	var objectPositionY = new UI.Number().setWidth( '50px' ).onChange( update );
-	var objectPositionZ = new UI.Number().setWidth( '50px' ).onChange( update );
+	var objectPositionX= addAttribute("position", null, "x", "number");
+	var objectPositionY= addAttribute("position", null, "y", "number");
+	var objectPositionZ= addAttribute("position", null, "z", "number");
 
 	objectPositionRow.add( new UI.Text( 'Position' ).setWidth( '90px' ) );
 	objectPositionRow.add( objectPositionX, objectPositionY, objectPositionZ );
@@ -64,9 +95,9 @@ function Properties (editor) {
 
 
 	var objectOrientationRow = new UI.Row();
-	var objectRotationX = new UI.Number().setWidth( '50px' ).onChange( update );
-	var objectRotationY = new UI.Number().setWidth( '50px' ).onChange( update );
-	var objectRotationZ = new UI.Number().setWidth( '50px' ).onChange( update );
+	var objectRotationX = addAttribute("rotation", null, "x", "number");
+	var objectRotationY = addAttribute("rotation", null, "y", "number");
+	var objectRotationZ = addAttribute("rotation", null, "z", "number");
 
 	objectOrientationRow.add( new UI.Text( 'Rotation' ).setWidth( '90px' ) );
 	objectOrientationRow.add( objectRotationX, objectRotationY, objectRotationZ );
@@ -74,9 +105,9 @@ function Properties (editor) {
 	container.add( objectOrientationRow );
 
 	var objectScaleRow = new UI.Row();
-	var objectScaleX = new UI.Number().setWidth( '50px' ).onChange( update );
-	var objectScaleY = new UI.Number().setWidth( '50px' ).onChange( update );
-	var objectScaleZ = new UI.Number().setWidth( '50px' ).onChange( update );
+	var objectScaleX = addAttribute("scale", null, "x", "number");
+	var objectScaleY = addAttribute("scale", null, "y", "number");
+	var objectScaleZ = addAttribute("scale", null, "z", "number");
 
 	objectScaleRow.add( new UI.Text( 'Scale' ).setWidth( '90px' ) );
 	objectScaleRow.add( objectScaleX, objectScaleY, objectScaleZ );
@@ -124,7 +155,12 @@ function Properties (editor) {
 		objectId.setValue( entity.id );
 
 		object = entity.object3D;
+		
+/*
+		var id = attributeName ? componentName+"."+attributeName+"."+property: componentName+"."+property;
+		widget = widgets[id];
 
+/*
 		objectPositionX.setValue( object.position.x );
 		objectPositionY.setValue( object.position.y );
 		objectPositionZ.setValue( object.position.z );
@@ -232,23 +268,6 @@ function Properties (editor) {
 
 	function updateRows( entity ) {
 
-		var properties = {
-			// 'parent': objectParentRow,
-			/*
-			'fov': objectFovRow,
-			'near': objectNearRow,
-			'far': objectFarRow,
-			'intensity': objectIntensityRow,
-			'color': objectColorRow,
-			'groundColor': objectGroundColorRow,
-			'distance' : objectDistanceRow,
-			'angle' : objectAngleRow,
-			'exponent' : objectExponentRow,
-			'decay' : objectDecayRow,
-			'castShadow' : objectShadowRow,
-			'receiveShadow' : objectReceiveShadow*/
-		};
-
 		var componentsToIgnore = [
 			"position","rotation","scale","visible"
 		];
@@ -274,19 +293,27 @@ function Properties (editor) {
 				newParamRow.add( new UI.Text( parameterName ).setWidth( '120px' ) );
 
 				var defaultValue = component.defaults[parameterName];
+
+				var type = null;
 				switch (typeof defaultValue) {
+					case "boolean":
+						type = "checkbox";
+						break;
 					case "number":
-						newParamRow.add( new UI.Number().setWidth( '50px' ).onChange( update ) );
+						type = "number";
 						break;
 					case "string":
 						if (defaultValue.indexOf("#")==-1)
-							newParamRow.add( new UI.Input("").setWidth( '50px' ).onChange( update ) );
+							type = "input";
 						else 
-							newParamRow.add( new UI.Color().setWidth( '50px' ).onChange( update ) );
+							type = "color";
 						break;
 					default:
-						console.log(parameterName,component.defaults[parameterName]);
+						console.log(parameterName,component.defaults[parameterName],typeof component.defaults[parameterName]);
 				}
+				var newWidget = addAttribute(componentName, null,parameterName, type);
+				newParamRow.add(newWidget);
+
 				newRow.add( newParamRow );
 
 			}
@@ -302,8 +329,6 @@ function Properties (editor) {
 			//properties[ property ].setDisplay( object[ property ] !== undefined ? '' : 'none' );
 
 		//}
-
-		console.log(entity.components);
 
 	}
 
@@ -333,6 +358,7 @@ function Properties (editor) {
 		objectScaleX.setValue( object.scale.x );
 		objectScaleY.setValue( object.scale.y );
 		objectScaleZ.setValue( object.scale.z );
+
 /*
 		if ( object.fov !== undefined ) {
 
@@ -464,22 +490,15 @@ function Properties (editor) {
 */
 	}
 
-	function update(object) {
-		
+	function update(event, componentName, attributeName, property) {
+		console.log(componentName, attributeName, property);
 		var entity = editor.selected.el;
-	  	
-	  	handleEntityChange(entity,"position","x",objectPositionX.getValue());
-	  	handleEntityChange(entity,"position","y",objectPositionY.getValue());
-	  	handleEntityChange(entity,"position","z",objectPositionZ.getValue());
-/*
-	  	handleEntityChange("scale","x",objectScaleX.getValue());
-	  	handleEntityChange("scale","y",objectScaleY.getValue());
-	  	handleEntityChange("scale","z",objectScaleZ.getValue());
-*/
-	  	
-	  	//handleEntityChange("material","color",objectColor.getValue());
 
-		//editor.signals.objectSelected.dispatch( editor.selected ); //??
+		var id = attributeName ? componentName+"."+attributeName+"."+property: componentName+"."+property;
+		widget = widgets[id];
+
+	  	handleEntityChange(entity,componentName,property,widget.getValue());
+
 		editor.signals.objectChanged.dispatch( object );
 
 	}

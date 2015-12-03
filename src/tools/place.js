@@ -168,6 +168,10 @@ module.exports = {
     this.selectedEntity.parentNode.removeChild(this.selectedEntity);
 
     this.selectedEntity = null;
+
+    
+    aframeEditor.editor.signals.sceneGraphChanged.dispatch();
+
   },
 
   use: function (e) {
