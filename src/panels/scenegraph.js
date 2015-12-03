@@ -1,6 +1,6 @@
 var UI = require('./ext/ui.js');
 
-function SceneGraph (editor) {
+function SceneGraph(editor) {
 
 	var signals = editor.signals;
 
@@ -15,11 +15,6 @@ function SceneGraph (editor) {
 		ignoreObjectSelectedSignal = true;
 		aframeEditor.editor.signals.entitySelected.dispatch(outliner.getValue());
 		ignoreObjectSelectedSignal = false;
-	} );
-	outliner.onDblClick( function () {
-
-//		editor.focusById( parseInt( outliner.getValue() ) );
-
 	} );
 	container.add( outliner );
 	container.add( new UI.Break() );
@@ -47,7 +42,6 @@ function SceneGraph (editor) {
 				if (!child.dataset.isEditor) {
 					var type ="Mesh";
 					var pad = '&nbsp;&nbsp;&nbsp;'.repeat(depth);
-					//options.push( { static: true, value: child.object3D.id, html: pad + '<span class="type ' + type + '"></span> ' + (child.id ? child.id : 'a-entity') } );
 					options.push( { static: true, value: child, html: pad + '<span class="type ' + type + '"></span> ' + (child.id ? child.id : 'a-entity') } );
 				}
 

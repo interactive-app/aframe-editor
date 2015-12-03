@@ -5,11 +5,13 @@ function Helpers(editor) {
 
     // Grid
     this.grid = new THREE.GridHelper(10, 1);
-    this.sceneHelpers.add(this.grid);
+    this.add(this.grid);
 }
 
 Helpers.prototype = {
-
+  add: function(helper) {
+    this.sceneHelpers.add(helper);
+  },
   hide: function() {
     this.sceneHelpers.visible = false;
   },

@@ -3,7 +3,6 @@ var Panels = require('./panels');
 var Signals = require('signals');
 var Viewport = require('./viewport');
 var Helpers = require('./helpers');
-var THREE = require('@mozvr/aframe').aframeCore.THREE;
 
 function Editor () {
   document.addEventListener('DOMContentLoaded', this.onDomLoaded.bind(this));

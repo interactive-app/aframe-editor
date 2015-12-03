@@ -9,8 +9,6 @@ module.exports = {
     this.scene = document.querySelector('a-scene');
     this.camera = this.scene.cameraEl;
 
-    //!!this.attributesPanel = aframeEditor.editor.panels.attributesPanel;
-    //!!this.attributesPanel.show();
     this.sidebar = aframeEditor.editor.panels.sidebar;
     this.sidebar.show();
 
@@ -19,7 +17,6 @@ module.exports = {
   },
 
   end: function () {
-    //!!this.attributesPanel.hide();
     this.sidebar.hide();
     this.removeListeners();
     this.removeCursor();

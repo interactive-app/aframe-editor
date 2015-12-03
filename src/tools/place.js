@@ -1,4 +1,4 @@
-/* global THREE */
+/* global THREE, aframeEditor */
 
 var colours = ['#DA6369', '#4191A6', '#5AA89A', '#5AA89A', '#F39C85'];
 
@@ -169,9 +169,7 @@ module.exports = {
 
     this.selectedEntity = null;
 
-    
     aframeEditor.editor.signals.sceneGraphChanged.dispatch();
-
   },
 
   use: function (e) {
