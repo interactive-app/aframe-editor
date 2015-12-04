@@ -1,4 +1,4 @@
-var UI = require('./ext/ui.js');
+var UI = require('../../lib/vendor/ui.js'); // @todo will be replaced with the npm package
 var SceneGraph = require('./scenegraph');
 var Attributes = require('./attributes');
 

@@ -1,247 +1,232 @@
-var UI = require('./ext/ui.js');
+var UI = require('../../lib/vendor/ui.js'); // @todo will be replaced with the npm package
 
 function handleEntityChange (entity, name, property, value) {
-
-	if (property) {
-	  
-		// multiple attribute properties
-		var properties=entity.getAttribute(name);
-		properties[property]=value;
-		entity.setAttribute(name, properties);
-	} else {
-
-		// single attribute value
-		entity.setAttribute(name, value);
-	}
+  if (property) {
+    // multiple attribute properties
+    var properties = entity.getAttribute(name);
+    properties[property] = value;
+    entity.setAttribute(name, properties);
+  } else {
+    // single attribute value
+    entity.setAttribute(name, value);
+  }
 }
 
 function Attributes (editor) {
+  var ignoreComponentsChange = false;
+  var container = new UI.Panel();
+  container.setBorderTop('0');
+  container.setPaddingTop('20px');
+  container.setDisplay('none');
 
-	var ignoreComponentsChange=false;
-	var container=new UI.Panel();
-	container.setBorderTop('0');
-	container.setPaddingTop('20px');
-	container.setDisplay('none');
+  var widgets = {};
+  function addAttribute (componentName, attributeName, property, type) {
+    var widget = null;
+    switch (type) {
+      case 'checkbox':
+        widget = new UI.Checkbox().setWidth('50px');
+        break;
+      case 'number':
+        widget = new UI.Number().setWidth('50px');
+        break;
+      case 'input':
+        widget = new UI.Input('').setWidth('50px');
+        break;
+      case 'color':
+        widget = new UI.Color().setWidth('50px');
+        break;
+      case 'vector3':
+        widget = new UI.Vector3().setWidth('150px');
+        break;
+      default:
+        console.warn('Unknown component type', componentName, attributeName, property, type);
+        widget = new UI.Input('');
+    }
 
-	widgets={};
-	function addAttribute(componentName, attributeName, property, type) {
-		var widget = null;
-		switch (type) {
-			case "checkbox":
-				widget=new UI.Checkbox().setWidth('50px');
-				break;
-			case "number":
-				widget=new UI.Number().setWidth('50px');
-				break;
-			case "input":
-				widget=new UI.Input("").setWidth('50px');
-				break;
-			case "color":
-				widget=new UI.Color().setWidth('50px');
-				break;
-			case "vector3":
-				widget=new UI.Vector3().setWidth('150px');
-				break;
-			default:
-				console.warn("Unknown component type",componentName, attributeName, property, type);
-				widget=new UI.Input("");
-		}
+    widget.onChange(function (event) {
+      update(event, componentName, attributeName, property);
+    });
 
-		widget.onChange(function(event){
-			update(event, componentName, attributeName, property);
-		});
-		
-		var id=attributeName ? componentName+"."+attributeName+"."+property: componentName+"."+property;
-		widgets[id]=widget;
-		return widget;
-	}
+    var id = attributeName ? componentName + '.' + attributeName + '.' + property : componentName + '.' + property;
+    widgets[id] = widget;
+    return widget;
+  }
 
-	var objectId,objectType;
-	function generateCommonAttributes() {
+  var objectId, objectType;
+  function generateCommonAttributes () {
+    var container = new UI.CollapsiblePanel();
 
-		var container = new UI.CollapsiblePanel();
-		//container.setDisplay( 'none' );
+    container.addStatic(new UI.Text('Common attributes').setTextTransform('uppercase'));
+    container.add(new UI.Break());
 
-		container.addStatic( new UI.Text( 'Common attributes' ).setTextTransform( 'uppercase' ) );
-		container.add( new UI.Break() );
+    // type
+    var objectTypeRow = new UI.Row();
+    objectType = new UI.Text();
 
-		// type
-		var objectTypeRow=new UI.Row();
-		objectType=new UI.Text();
+    objectTypeRow.add(new UI.Text('Type').setWidth('90px'));
+    objectTypeRow.add(objectType);
 
-		objectTypeRow.add(new UI.Text('Type').setWidth('90px'));
-		objectTypeRow.add(objectType);
+    container.add(objectTypeRow);
 
-		container.add(objectTypeRow);
+    // name
+    var objectIdRow = new UI.Row();
+    objectId = new UI.Input().setWidth('150px').setFontSize('12px').onChange(function () {
+      handleEntityChange(editor.selected.el, 'id', null, objectId.getValue());
+      editor.signals.sceneGraphChanged.dispatch();
+    });
 
-		// name
-		var objectIdRow=new UI.Row();
-		objectId=new UI.Input().setWidth('150px').setFontSize('12px').onChange(function () {
-			handleEntityChange(editor.selected.el,"id",null,objectId.getValue());
-			editor.signals.sceneGraphChanged.dispatch(object);
-		});
+    objectIdRow.add(new UI.Text('ID').setWidth('90px'));
+    objectIdRow.add(objectId);
+    container.add(objectIdRow);
 
-		objectIdRow.add(new UI.Text('ID').setWidth('90px'));
-		objectIdRow.add(objectId);
-		container.add(objectIdRow);
+    // position
+    var objectPositionRow = new UI.Row();
+    var objectPositionX = addAttribute('position', null, 'x', 'number');
+    var objectPositionY = addAttribute('position', null, 'y', 'number');
+    var objectPositionZ = addAttribute('position', null, 'z', 'number');
 
-		// position
-		var objectPositionRow=new UI.Row();
-		var objectPositionX=addAttribute("position", null, "x", "number");
-		var objectPositionY=addAttribute("position", null, "y", "number");
-		var objectPositionZ=addAttribute("position", null, "z", "number");
+    objectPositionRow.add(new UI.Text('Position').setWidth('90px'));
+    objectPositionRow.add(objectPositionX, objectPositionY, objectPositionZ);
 
-		objectPositionRow.add(new UI.Text('Position').setWidth('90px'));
-		objectPositionRow.add(objectPositionX, objectPositionY, objectPositionZ);
+    container.add(objectPositionRow);
 
-		container.add(objectPositionRow);
+    var objectOrientationRow = new UI.Row();
+    var objectRotationX = addAttribute('rotation', null, 'x', 'number');
+    var objectRotationY = addAttribute('rotation', null, 'y', 'number');
+    var objectRotationZ = addAttribute('rotation', null, 'z', 'number');
 
+    objectOrientationRow.add(new UI.Text('Rotation').setWidth('90px'));
+    objectOrientationRow.add(objectRotationX, objectRotationY, objectRotationZ);
 
-		var objectOrientationRow=new UI.Row();
-		var objectRotationX=addAttribute("rotation", null, "x", "number");
-		var objectRotationY=addAttribute("rotation", null, "y", "number");
-		var objectRotationZ=addAttribute("rotation", null, "z", "number");
+    container.add(objectOrientationRow);
 
-		objectOrientationRow.add(new UI.Text('Rotation').setWidth('90px'));
-		objectOrientationRow.add(objectRotationX, objectRotationY, objectRotationZ);
+    var objectScaleRow = new UI.Row();
+    var objectScaleX = addAttribute('scale', null, 'x', 'number');
+    var objectScaleY = addAttribute('scale', null, 'y', 'number');
+    var objectScaleZ = addAttribute('scale', null, 'z', 'number');
 
-		container.add(objectOrientationRow);
+    objectScaleRow.add(new UI.Text('Scale').setWidth('90px'));
+    objectScaleRow.add(objectScaleX, objectScaleY, objectScaleZ);
 
-		var objectScaleRow=new UI.Row();
-		var objectScaleX=addAttribute("scale", null, "x", "number");
-		var objectScaleY=addAttribute("scale", null, "y", "number");
-		var objectScaleZ=addAttribute("scale", null, "z", "number");
+    container.add(objectScaleRow);
 
-		objectScaleRow.add(new UI.Text('Scale').setWidth('90px'));
-		objectScaleRow.add(objectScaleX, objectScaleY, objectScaleZ);
+    return container;
+  }
 
-		container.add(objectScaleRow);
+  container.add(generateCommonAttributes());
 
-		return container;
-	}
+  // --- CUSTOM
+  var objectCustomRow = new UI.Row();
+  container.add(objectCustomRow);
 
-	container.add(generateCommonAttributes());
+  editor.signals.entitySelected.add(function (entity) {
+    if (entity) {
+      container.show();
+      updateRows(entity);
+      updateUI(entity);
+    } else {
+      container.hide();
+    }
+  });
 
-	// --- CUSTOM
-	var objectCustomRow=new UI.Row();
-	container.add(objectCustomRow);
+  editor.signals.componentChanged.add(function (evt) {
+    var entity = evt.detail.target;
+    updateUI(entity);
+    editor.signals.objectChanged.dispatch(entity.object3D);
+  });
 
-	editor.signals.entitySelected.add(function (entity) {
-		if (entity) {
-			container.show();
-			updateRows(entity);
-			updateUI(entity);
-		} else {
-			container.hide();
-		}
-	});
+  function updateUI (entity) {
+    if (ignoreComponentsChange) {
+      return;
+    }
 
-	editor.signals.componentChanged.add(function (evt) {
-		var entity = evt.detail.target;
-		updateUI(entity);
-		editor.signals.objectChanged.dispatch(entity.object3D);
-	});
-		
-	function updateUI(entity) {
+    objectType.setValue(entity.tagName);
+    objectId.setValue(entity.id);
 
-		if (ignoreComponentsChange)
-			return;			
+    var attributes = Array.prototype.slice.call(entity.attributes);
+    attributes.forEach(function (attribute) {
+      var properties = entity.getAttribute(attribute.name);
+      for (var property in properties) {
+        var id = attribute.name + '.' + property;
+        var widget = widgets[id];
+        if (widget) {
+          widget.setValue(properties[property]);
+        }
+      }
+    });
+  }
 
-		objectType.setValue(entity.tagName);
-		objectId.setValue(entity.id);
-		object=entity.object3D;
-		
-		var attributes = Array.prototype.slice.call(entity.attributes);
-		attributes.forEach(function (attribute) {
-			var properties = entity.getAttribute(attribute.name);
-			for (var property in properties) {
-				var id=attribute.name+"."+property;
-				widget=widgets[id];
-				if (widget) {
-					widget.setValue(properties[property]);
-				}
-			}
-		});
-	}
+  function updateRows (entity) {
+    var componentsToIgnore = [
+      'position', 'rotation', 'scale', 'visible'
+    ];
 
-	function updateRows(entity) {
+    objectCustomRow.clear();
 
-		var componentsToIgnore=[
-			"position","rotation","scale","visible"
-		];
+    for (var componentName in entity.components) {
+      if (componentsToIgnore.indexOf(componentName) !== -1) {
+        continue;
+      }
 
-		objectCustomRow.clear();
+      var component = entity.components[componentName];
 
-		for (var componentName in entity.components) {
+      var container = new UI.CollapsiblePanel();
+      container.addStatic(new UI.Text(componentName).setTextTransform('uppercase'));
+      container.add(new UI.Break());
 
-			if (componentsToIgnore.indexOf(componentName)!==-1)
-				continue;
+      for (var parameterName in component.defaults) {
+        var newParamRow = new UI.Row();
 
-			var component=entity.components[componentName];
+        newParamRow.add(new UI.Text(parameterName).setWidth('120px'));
 
-			var container = new UI.CollapsiblePanel();
-			container.addStatic(new UI.Text(componentName).setTextTransform('uppercase'));
-			container.add( new UI.Break() );
-			
-			var objectType=new UI.Text();
-			for (var parameterName in component.defaults) {
-					
-				var newParamRow=new UI.Row();
+        var defaultValue = component.defaults[parameterName];
 
-				newParamRow.add(new UI.Text(parameterName).setWidth('120px'));
+        var type = null;
+        switch (typeof defaultValue) {
+          case 'boolean':
+            type = 'checkbox';
+            break;
+          case 'number':
+            type = 'number';
+            break;
+          case 'object':
+            type = 'vector3';
+            break;
+          case 'string':
+            if (defaultValue.indexOf('#') === -1) {
+              type = 'input';
+            } else {
+              type = 'color';
+            }
+            break;
+          default:
+            console.warn(parameterName, component.defaults[parameterName], typeof component.defaults[parameterName]);
+        }
+        var newWidget = addAttribute(componentName, null, parameterName, type);
+        newWidget.setValue(defaultValue);
+        newParamRow.add(newWidget);
 
-				var defaultValue=component.defaults[parameterName];
+        container.add(newParamRow);
+      }
+      container.add(new UI.Break());
+      objectCustomRow.add(container);
+    }
+  }
 
-				var type=null;
-				switch (typeof defaultValue) {
-					case "boolean":
-						type="checkbox";
-						break;
-					case "number":
-						type="number";
-						break;
-					case "object":
-						type="vector3";
-						break;
-					case "string":
-						if (defaultValue.indexOf("#")==-1)
-							type="input";
-						else 
-							type="color";
-						break;
-					default:
-						console.warn(parameterName,component.defaults[parameterName],typeof component.defaults[parameterName]);
-				}
-				var newWidget=addAttribute(componentName, null,parameterName, type);
-				newWidget.setValue(defaultValue);
-				newParamRow.add(newWidget);
+  function update (event, componentName, attributeName, property) {
+    ignoreComponentsChange = true;
+    var entity = editor.selected.el;
 
-				container.add(newParamRow);
+    var id = attributeName ? componentName + '.' + attributeName + '.' + property : componentName + '.' + property;
+    var widget = widgets[id];
 
-			}
-			container.add(new UI.Break());
+    handleEntityChange(entity, componentName, property, widget.getValue());
 
-			objectCustomRow.add(container);
+    editor.signals.objectChanged.dispatch(entity.object3D);
+    ignoreComponentsChange = false;
+  }
 
-
-		}
-	}
-
-	function update(event, componentName, attributeName, property) {
-
-		ignoreComponentsChange=true;
-		var entity=editor.selected.el;
-
-		var id=attributeName ? componentName+"."+attributeName+"."+property: componentName+"."+property;
-		widget=widgets[id];
-
-		handleEntityChange(entity,componentName,property,widget.getValue());
-
-		editor.signals.objectChanged.dispatch(object);
-		ignoreComponentsChange=false;
-	}
-
-	return container;
+  return container;
 }
 
-module.exports=Attributes;
+module.exports = Attributes;
