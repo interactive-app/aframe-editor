@@ -2,19 +2,22 @@ var UI = require('./ext/ui.js');
 
 function handleEntityChange (entity, name, property, value) {
 
-    if (property) {
-      // multiple attribute properties
-      var properties=entity.getAttribute(name);
-      properties[property]=value;
-      entity.setAttribute(name, properties);
-    } else {
-      // single attribute value
-      entity.setAttribute(name, value);
-    }
+	if (property) {
+	  
+		// multiple attribute properties
+		var properties=entity.getAttribute(name);
+		properties[property]=value;
+		entity.setAttribute(name, properties);
+	} else {
+
+		// single attribute value
+		entity.setAttribute(name, value);
+	}
 }
 
 function Attributes (editor) {
 
+	var ignoreComponentsChange=false;
 	var container=new UI.Panel();
 	container.setBorderTop('0');
 	container.setPaddingTop('20px');
@@ -25,29 +28,31 @@ function Attributes (editor) {
 		var widget = null;
 		switch (type) {
 			case "checkbox":
-				widget=new UI.Checkbox();
+				widget=new UI.Checkbox().setWidth('50px');
 				break;
 			case "number":
-				widget=new UI.Number();
+				widget=new UI.Number().setWidth('50px');
 				break;
 			case "input":
-				widget=new UI.Input("");
+				widget=new UI.Input("").setWidth('50px');
 				break;
 			case "color":
-				widget=new UI.Color();
+				widget=new UI.Color().setWidth('50px');
+				break;
+			case "vector3":
+				widget=new UI.Vector3().setWidth('150px');
 				break;
 			default:
 				console.warn("Unknown component type",componentName, attributeName, property, type);
 				widget=new UI.Input("");
 		}
 
-		widget.setWidth('50px').onChange(function(event){
+		widget.onChange(function(event){
 			update(event, componentName, attributeName, property);
 		});
-
+		
 		var id=attributeName ? componentName+"."+attributeName+"."+property: componentName+"."+property;
 		widgets[id]=widget;
-
 		return widget;
 	}
 
@@ -131,20 +136,28 @@ function Attributes (editor) {
 		}
 	});
 
+	editor.signals.componentChanged.add(function (evt) {
+		var entity = evt.detail.target;
+		updateUI(entity);
+		editor.signals.objectChanged.dispatch(entity.object3D);
+	});
+		
 	function updateUI(entity) {
+
+		if (ignoreComponentsChange)
+			return;			
 
 		objectType.setValue(entity.tagName);
 		objectId.setValue(entity.id);
 		object=entity.object3D;
 		
-  		var attributes = Array.prototype.slice.call(entity.attributes);
+		var attributes = Array.prototype.slice.call(entity.attributes);
 		attributes.forEach(function (attribute) {
 			var properties = entity.getAttribute(attribute.name);
 			for (var property in properties) {
 				var id=attribute.name+"."+property;
 				widget=widgets[id];
 				if (widget) {
-					console.log(id,typeof(properties[property]),properties[property], widget);
 					widget.setValue(properties[property]);
 				}
 			}
@@ -187,6 +200,9 @@ function Attributes (editor) {
 					case "number":
 						type="number";
 						break;
+					case "object":
+						type="vector3";
+						break;
 					case "string":
 						if (defaultValue.indexOf("#")==-1)
 							type="input";
@@ -194,7 +210,7 @@ function Attributes (editor) {
 							type="color";
 						break;
 					default:
-						console.log(parameterName,component.defaults[parameterName],typeof component.defaults[parameterName]);
+						console.warn(parameterName,component.defaults[parameterName],typeof component.defaults[parameterName]);
 				}
 				var newWidget=addAttribute(componentName, null,parameterName, type);
 				newWidget.setValue(defaultValue);
@@ -212,14 +228,17 @@ function Attributes (editor) {
 	}
 
 	function update(event, componentName, attributeName, property) {
+
+		ignoreComponentsChange=true;
 		var entity=editor.selected.el;
 
 		var id=attributeName ? componentName+"."+attributeName+"."+property: componentName+"."+property;
 		widget=widgets[id];
 
-	  	handleEntityChange(entity,componentName,property,widget.getValue());
+		handleEntityChange(entity,componentName,property,widget.getValue());
 
 		editor.signals.objectChanged.dispatch(object);
+		ignoreComponentsChange=false;
 	}
 
 	return container;

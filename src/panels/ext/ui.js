@@ -1355,4 +1355,46 @@ UI.THREE.Boolean.prototype.setValue = function ( value ) {
 
 };
 
+UI.Vector3 = function ( vector3 ) {
+
+	UI.Element.call( this );
+
+	var dom = document.createElement( 'div' );
+	dom.className = 'Row';
+
+	this.dom = dom;
+
+	var scope=this;
+		
+	this.vector={
+		'x': new UI.Number().setWidth('50px'),
+		'y': new UI.Number().setWidth('50px'),
+		'z': new UI.Number().setWidth('50px'),
+	}
+	
+	this.add(this.vector['x'] ,this.vector['y'] ,this.vector['z']);
+};
+
+UI.Vector3.prototype = Object.create( UI.Element.prototype );
+UI.Vector3.prototype.constructor = UI.Vector3;
+
+UI.Vector3.prototype.setWidth=function(value) {
+	return this;
+};
+
+UI.Vector3.prototype.setValue=function(value) {
+	for (var val in value) {
+		this.vector[val].setValue(value[val]);
+	}
+	return this;
+};
+
+UI.Vector3.prototype.getValue=function() {
+	return {
+		'x': this.vector['x'].getValue(),
+		'y': this.vector['x'].getValue(),
+		'z': this.vector['x'].getValue()
+	}
+}
+
 module.exports = UI;

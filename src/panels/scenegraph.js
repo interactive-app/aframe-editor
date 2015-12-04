@@ -2,6 +2,17 @@ var UI = require('./ext/ui.js');
 
 function SceneGraph(editor) {
 
+	// Megahack to include font-awesome
+	//-------------
+	file = location.pathname.split( "/" ).pop();
+	link = document.createElement( "link" );
+	link.href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	link.media = "screen,print";
+	document.getElementsByTagName( "head" )[0].appendChild( link );
+	////--------
+
 	var signals = editor.signals;
 
 	var container = new UI.Panel();
@@ -40,9 +51,16 @@ function SceneGraph(editor) {
 
 				// filter out all entities added by editor
 				if (!child.dataset.isEditor) {
+					var extra="";
+					var icons = {"camera":"fa-video-camera","light":"fa-lightbulb-o","geometry":"fa-cube","material":"fa-picture-o"};
+					for (icon in icons) {
+						if (child.components[icon])
+							extra+=' <i class="fa '+icons[icon]+'"></i>';
+					}
+
 					var type ="Mesh";
 					var pad = '&nbsp;&nbsp;&nbsp;'.repeat(depth);
-					options.push( { static: true, value: child, html: pad + '<span class="type ' + type + '"></span> ' + (child.id ? child.id : 'a-entity') } );
+					options.push( { static: true, value: child, html: pad + '<span class="type ' + type + '"></span> ' + (child.id ? child.id : 'a-entity') + extra} );
 				}
 
 				treeIterate(child, depth);
