@@ -63,10 +63,12 @@ Panel.prototype.onToggleClick = function (e) {
     this.toggleButton.innerHTML = 'Exit';
     this.selectTool();
     this.showTools(true);
+    aframeEditor.editor.helpers.show();
   } else {
     this.toggleButton.innerHTML = 'Edit';
     this.endCurrentTool();
     this.showTools(false);
+    aframeEditor.editor.helpers.hide();
   }
 };
 

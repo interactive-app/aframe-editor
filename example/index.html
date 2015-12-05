@@ -9,7 +9,7 @@
     <script src="../node_modules/@mozvr/aframe-core/build/aframe-core.js"></script>
     <script src="../build/aframe-editor.js"></script>
     <style>
-      body { background-color: black; }
+      body { background-color: #aaa; }
     </style>
   </head>
   <body>
@@ -17,7 +17,16 @@
       <!-- Cube -->
       <a-entity id="myCube" position="0 0 0" rotation="45 30 0"
                 geometry="primitive: box; height: 2; width: 2; depth: 2;"
+                light="color: #DDDDFF; distance: 130; intensity: 2; type: point"
                 material="color: #167341; roughness: 1.0; metalness: 0.2;"></a-entity>
+      <a-entity id="sphere" position="3 3 0" rotation="0 0 0"
+                geometry="primitive: sphere; radius: 1.5"
+                material="color: #ff0000; roughness: 1.0; metalness: 0.2;"></a-entity>
+      <a-entity id="mycube2" position="-2 4 -2" rotation="0 0 0"
+                geometry="primitive: box; height: 2; width: 2; depth: 2;"
+                material="color: #0000ff; roughness: 1.0; metalness: 0.2;"></a-entity>
+      <a-entity id="pointlight" position="0 2 0" light="color: #DDDDFF; distance: 130; intensity: 2; type: point"></a-entity>
+      <a-entity id="directional" light="type: directional; color: #fff; intensity: 1.2" position="-2 8 2"></a-entity>
     </a-scene>
   </body>
 </html>
