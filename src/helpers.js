@@ -12,12 +12,33 @@ function Helpers (editor) {
 
   this.addGridHelper();
   this.findHelpers();
+
+  editor.signals.objectChanged.add(function (object) {
+    this.updateHelper(object.el);
+  }.bind(this));
 }
 
 Helpers.prototype = {
   addGridHelper: function () {
     this.grid = new THREE.GridHelper(10, 1);
     this.add(this.grid);
+  },
+
+  updateHelper: function (entity) {
+    if (entity.helper) {
+      var object = entity.components['light'].light;
+      var helper = this.helpers[ entity.object3D.id ];
+      if (helper instanceof this.guessHelperType(entity)) {
+        // It's the same helper, just update and skip
+        helper.update();
+      } else {
+        helper.parent.remove(helper);
+        delete this.helpers[ object.id ];
+        this.addHelper(entity);
+      }
+    } else {
+      this.addHelper(entity);
+    }
   },
 
   removeHelper: function (object) {
