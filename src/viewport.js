@@ -9,6 +9,9 @@ function Viewport (editor) {
   editor.helpers.add(selectionBox);
   signals.objectSelected.add(function (object) {
     selectionBox.visible = false;
+    if (editor.selected.el.helper)
+      return;
+
     if (object !== null) {
       if (object.geometry !== undefined &&
         object instanceof THREE.Sprite === false) {
@@ -19,6 +22,8 @@ function Viewport (editor) {
   });
 
   signals.objectChanged.add(function () {
+    if (editor.selected.el.helper)
+      return;
     selectionBox.update(editor.selected);
   });
 }
