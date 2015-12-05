@@ -9,7 +9,7 @@ function Viewport (editor) {
   editor.helpers.add(selectionBox);
   signals.objectSelected.add(function (object) {
     selectionBox.visible = false;
-    if (editor.selected.el.helper)
+    if (!editor.selected || editor.selected.el.helper)
       return;
 
     if (object !== null) {
