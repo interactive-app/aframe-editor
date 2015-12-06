@@ -47,7 +47,7 @@ function Attributes (editor) {
       update(event, componentName, attributeName, property);
     });
 
-    var id = attributeName ? componentName + '.' + attributeName + '.' + property : componentName + '.' + property;
+    var id = attributeName ? componentName + '.' + attributeName + '.' + property : property ? (componentName + '.' + property) : componentName;
     widgets[id] = widget;
     return widget;
   }
@@ -79,7 +79,7 @@ function Attributes (editor) {
     objectIdRow.add(objectId);
     container.add(objectIdRow);
 
-    // position
+    // Position
     var objectPositionRow = new UI.Row();
     var objectPositionX = addAttribute('position', null, 'x', 'number');
     var objectPositionY = addAttribute('position', null, 'y', 'number');
@@ -90,6 +90,7 @@ function Attributes (editor) {
 
     container.add(objectPositionRow);
 
+    // Rotation
     var objectOrientationRow = new UI.Row();
     var objectRotationX = addAttribute('rotation', null, 'x', 'number');
     var objectRotationY = addAttribute('rotation', null, 'y', 'number');
@@ -100,6 +101,7 @@ function Attributes (editor) {
 
     container.add(objectOrientationRow);
 
+    // Scale
     var objectScaleRow = new UI.Row();
     var objectScaleX = addAttribute('scale', null, 'x', 'number');
     var objectScaleY = addAttribute('scale', null, 'y', 'number');
@@ -109,6 +111,15 @@ function Attributes (editor) {
     objectScaleRow.add(objectScaleX, objectScaleY, objectScaleZ);
 
     container.add(objectScaleRow);
+
+    // Visible
+    var objectVisibleRow = new UI.Row();
+    var objectVisible = addAttribute('visible', null, null, 'checkbox').setValue(1);
+
+    objectVisibleRow.add(new UI.Text('Visible').setWidth('90px'));
+    objectVisibleRow.add(objectVisible);
+
+    container.add(objectVisibleRow);
 
     return container;
   }
@@ -139,10 +150,8 @@ function Attributes (editor) {
     if (ignoreComponentsChange) {
       return;
     }
-
     objectType.setValue(entity.tagName);
     objectId.setValue(entity.id);
-
     var attributes = Array.prototype.slice.call(entity.attributes);
     attributes.forEach(function (attribute) {
       var properties = entity.getAttribute(attribute.name);
@@ -174,12 +183,9 @@ function Attributes (editor) {
       container.addStatic(new UI.Text(componentName).setTextTransform('uppercase'));
       container.add(new UI.Break());
 
-      for (var parameterName in component.defaults) {
+      function addParameterRow(parameterName, defaultValue) {
         var newParamRow = new UI.Row();
-
         newParamRow.add(new UI.Text(parameterName).setWidth('120px'));
-
-        var defaultValue = component.defaults[parameterName];
 
         var type = null;
         switch (typeof defaultValue) {
@@ -205,8 +211,16 @@ function Attributes (editor) {
         var newWidget = addAttribute(componentName, null, parameterName, type);
         newWidget.setValue(defaultValue);
         newParamRow.add(newWidget);
+        return newParamRow;
+      }
 
-        container.add(newParamRow);
+      if (typeof component.defaults === 'object') {
+        for (var parameterName in component.defaults) {
+          container.add(addParameterRow(parameterName, component.defaults[parameterName]));
+        }
+      } else {
+        // Handle simple type defaults
+        container.add(addParameterRow(null, component.defaults));
       }
       container.add(new UI.Break());
       objectCustomRow.add(container);
@@ -217,7 +231,7 @@ function Attributes (editor) {
     ignoreComponentsChange = true;
     var entity = editor.selected.el;
 
-    var id = attributeName ? componentName + '.' + attributeName + '.' + property : componentName + '.' + property;
+    var id = attributeName ? componentName + '.' + attributeName + '.' + property : property ? (componentName + '.' + property) : componentName;
     var widget = widgets[id];
 
     handleEntityChange(entity, componentName, property, widget.getValue());
