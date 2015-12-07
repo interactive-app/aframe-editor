@@ -1,3 +1,4 @@
+/* global aframeCore */
 var UI = require('../../lib/vendor/ui.js'); // @todo will be replaced with the npm package
 
 function handleEntityChange (entity, name, property, value) {
@@ -124,7 +125,36 @@ function Attributes (editor) {
     return container;
   }
 
+  var componentsList;
+  function generateNewComponentsRow () {
+    var componentsRow = new UI.Row();
+    var componentsOptions = {};
+    var ignoredComponents = ['position', 'rotation', 'scale', 'visible'];
+    for (var name in aframeCore.AComponents) {
+      if (ignoredComponents.indexOf(name) === -1) {
+        componentsOptions[name] = name;
+      }
+    }
+
+    function addComponent (componentName) {
+      var entity = editor.selected.el;
+      entity.setAttribute(componentName, '');
+      updateRows(entity);
+      updateUI(entity);
+    }
+
+    componentsList = new UI.Select().setId('componentlist').setOptions(componentsOptions).setWidth('150px');
+    componentsRow.add(new UI.Text('Add').setWidth('90px'));
+    componentsRow.add(componentsList);
+    var button = new UI.Button('+').onClick(function () {
+      addComponent(componentsList.getValue());
+    });
+    componentsRow.add(button.setWidth('20px'));
+    return componentsRow;
+  }
+
   container.add(generateCommonAttributes());
+  container.add(generateNewComponentsRow());
 
   // --- CUSTOM
   var objectCustomRow = new UI.Row();
@@ -150,8 +180,10 @@ function Attributes (editor) {
     if (ignoreComponentsChange) {
       return;
     }
+
     objectType.setValue(entity.tagName);
     objectId.setValue(entity.id);
+
     var attributes = Array.prototype.slice.call(entity.attributes);
     attributes.forEach(function (attribute) {
       var properties = entity.getAttribute(attribute.name);
@@ -178,12 +210,11 @@ function Attributes (editor) {
       }
 
       var component = entity.components[componentName];
-
       var container = new UI.CollapsiblePanel();
       container.addStatic(new UI.Text(componentName).setTextTransform('uppercase'));
       container.add(new UI.Break());
 
-      function addParameterRow(parameterName, defaultValue) {
+      function addParameterRow (parameterName, defaultValue) {
         var newParamRow = new UI.Row();
         newParamRow.add(new UI.Text(parameterName).setWidth('120px'));
 
