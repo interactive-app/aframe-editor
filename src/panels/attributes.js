@@ -202,6 +202,13 @@ function Attributes (editor) {
     });
   }
 
+  function setEmptyComponent (entity, componentName) {
+    entity.setAttribute(componentName, '');
+    updateRows(entity);
+    updateUI(entity);
+    editor.signals.objectChanged.dispatch(entity.object3D);
+  }
+
   function updateRows (entity) {
     var componentsToIgnore = [
       'position', 'rotation', 'scale', 'visible'
@@ -215,8 +222,38 @@ function Attributes (editor) {
       }
 
       var component = entity.components[componentName];
+      var objectActions = new UI.Select().setId(componentName).setPosition('absolute').setRight( '8px' ).setFontSize( '11px' );
+      objectActions.setOptions({
+        'Actions': 'Actions',
+        'Delete': 'Delete',
+        'Clear': 'Clear'
+        // 'Reset': 'Reset to initial'
+      });
+
+      objectActions.onClick(function (event) {
+        event.stopPropagation(); // Avoid panel collapsing
+      });
+      objectActions.onChange(function (event, component) {
+        var action = this.getValue();
+        switch (action) {
+          case 'Delete':
+            entity.removeAttribute(this.getId());
+          break;
+
+          case 'Clear':
+            setEmptyComponent(entity, this.getId());
+          break;
+
+          default:
+            return;
+        }
+        this.setValue('Actions');
+        updateRows(entity);
+        updateUI(entity);
+        editor.signals.objectChanged.dispatch(entity.object3D);
+      });
       var container = new UI.CollapsiblePanel();
-      container.addStatic(new UI.Text(componentName).setTextTransform('uppercase'));
+      container.addStatic(new UI.Text(componentName).setTextTransform('uppercase'), objectActions);
       container.add(new UI.Break());
 
       function addParameterRow (parameterName, defaultValue) {
