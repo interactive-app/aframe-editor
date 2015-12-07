@@ -184,6 +184,11 @@ function Attributes (editor) {
     objectType.setValue(entity.tagName);
     objectId.setValue(entity.id);
 
+    var availableComponents = componentsList.dom.querySelectorAll('option');
+    for (var i = 0; i < availableComponents.length; i++) {
+      availableComponents[i].disabled = entity.getAttribute(availableComponents[i].value);
+    }
+
     var attributes = Array.prototype.slice.call(entity.attributes);
     attributes.forEach(function (attribute) {
       var properties = entity.getAttribute(attribute.name);
