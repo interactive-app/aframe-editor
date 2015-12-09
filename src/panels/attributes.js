@@ -21,9 +21,20 @@ function Attributes (editor) {
   container.setDisplay('none');
 
   var widgets = {};
-  function addAttribute (componentName, attributeName, property, type) {
+  function addAttribute (componentName, attributeName, property, type, parameterSchema) {
     var widget = null;
+    if (typeof parameterSchema ==='undefined') {
+      parameterSchema={};
+    }
     switch (type) {
+      case 'select':
+        var options = {};
+        // Convert array to object
+        for (var key in parameterSchema.oneOf) {
+          options[parameterSchema.oneOf[key]] = parameterSchema.oneOf[key];
+        }
+        widget = new UI.Select().setOptions(options);
+        break;
       case 'checkbox':
         widget = new UI.Checkbox().setWidth('50px');
         break;
@@ -42,6 +53,12 @@ function Attributes (editor) {
       default:
         console.warn('Unknown component type', componentName, attributeName, property, type);
         widget = new UI.Input('');
+    }
+    if (parameterSchema.hasOwnProperty("min")) {
+      widget.min = parameterSchema.min;
+    }
+    if (parameterSchema.hasOwnProperty("max")) {
+      widget.max = parameterSchema.max;
     }
 
     widget.onChange(function (event) {
@@ -130,7 +147,7 @@ function Attributes (editor) {
     var componentsRow = new UI.Row();
     var componentsOptions = {};
     var ignoredComponents = ['position', 'rotation', 'scale', 'visible'];
-    for (var name in aframeCore.AComponents) {
+    for (var name in aframeCore.components) {
       if (ignoredComponents.indexOf(name) === -1) {
         componentsOptions[name] = name;
       }
@@ -222,7 +239,9 @@ function Attributes (editor) {
       }
 
       var component = entity.components[componentName];
-      var objectActions = new UI.Select().setId(componentName).setPosition('absolute').setRight( '8px' ).setFontSize( '11px' );
+      var componentSchema = aframeCore.components[componentName].schema;
+
+      var objectActions = new UI.Select().setId(componentName).setPosition('absolute').setRight('8px').setFontSize('11px');
       objectActions.setOptions({
         'Actions': 'Actions',
         'Delete': 'Delete',
@@ -256,37 +275,48 @@ function Attributes (editor) {
       container.addStatic(new UI.Text(componentName).setTextTransform('uppercase'), objectActions);
       container.add(new UI.Break());
 
-      function addParameterRow (parameterName, defaultValue) {
+      function addParameterRow (parameterName, parameterSchema) {
+        console.log(parameterName, parameterSchema);
         var newParamRow = new UI.Row();
         newParamRow.add(new UI.Text(parameterName).setWidth('120px'));
 
+        var defaultValue = parameterSchema.default;
         var type = null;
-        switch (typeof defaultValue) {
-          case 'boolean':
-            type = 'checkbox';
-            break;
-          case 'number':
-            type = 'number';
-            break;
-          case 'object':
-            type = 'vector3';
-            break;
-          case 'string':
-            if (defaultValue.indexOf('#') === -1) {
-              type = 'input';
-            } else {
-              type = 'color';
-            }
-            break;
-          default:
-            console.warn(parameterName, component.defaults[parameterName], typeof component.defaults[parameterName]);
+        if (parameterSchema.oneOf) {
+          type = 'select';
+        } else {
+          switch (typeof defaultValue) {
+            case 'boolean':
+              type = 'checkbox';
+              break;
+            case 'number':
+              type = 'number';
+              break;
+            case 'object':
+              type = 'vector3';
+              break;
+            case 'string':
+              if (defaultValue.indexOf('#') === -1) {
+                type = 'input';
+              } else {
+                type = 'color';
+              }
+              break;
+            default:
+              console.warn(parameterName, component.defaults[parameterName], typeof component.defaults[parameterName]);
+          }
         }
-        var newWidget = addAttribute(componentName, null, parameterName, type);
+        var newWidget = addAttribute(componentName, null, parameterName, type, parameterSchema);
         newWidget.setValue(defaultValue);
         newParamRow.add(newWidget);
         return newParamRow;
       }
+      for (var parameterName in componentSchema) {
+        container.add(addParameterRow(parameterName, componentSchema[parameterName]));
+      }
 
+      /*
+      console.log(component,componentSchema);
       if (typeof component.defaults === 'object') {
         for (var parameterName in component.defaults) {
           container.add(addParameterRow(parameterName, component.defaults[parameterName]));
@@ -295,6 +325,7 @@ function Attributes (editor) {
         // Handle simple type defaults
         container.add(addParameterRow(null, component.defaults));
       }
+      */
       container.add(new UI.Break());
       objectCustomRow.add(container);
     }
