@@ -60,7 +60,7 @@ function Attributes (editor) {
     if (parameterSchema.hasOwnProperty("max")) {
       widget.max = parameterSchema.max;
     }
-
+    widget.schema = parameterSchema; // Hack
     widget.onChange(function (event) {
       update(event, componentName, attributeName, property);
     });
@@ -217,6 +217,36 @@ function Attributes (editor) {
         }
       }
     });
+
+    updateWidgetVisibility(entity);
+  }
+
+  function updateWidgetVisibility(entity) {
+    // Apply visibility
+    for (var componentName in entity.components)
+    {
+      var properties = aframeCore.components[componentName].schema;
+      for (var property in properties) {
+        var id = componentName + '.' + property;
+        var widget = widgets[id];
+        if (widget && widget.parameterRow) {
+          var visible = true;
+          if (widget.schema.if) {
+            for (var condition in widget.schema.if) {
+              var ifWidget = widgets[componentName + '.' + condition];
+              if (widget.schema.if[condition].indexOf(ifWidget.getValue()) ===-1) {
+                visible = false;
+              }
+            }
+          }
+          if (visible) {
+            widget.parameterRow.show();
+          } else {
+            widget.parameterRow.hide();
+          }
+        }
+      }
+    }
   }
 
   function setEmptyComponent (entity, componentName) {
@@ -276,7 +306,6 @@ function Attributes (editor) {
       container.add(new UI.Break());
 
       function addParameterRow (parameterName, parameterSchema) {
-        console.log(parameterName, parameterSchema);
         var newParamRow = new UI.Row();
         newParamRow.add(new UI.Text(parameterName).setWidth('120px'));
 
@@ -308,6 +337,7 @@ function Attributes (editor) {
         }
         var newWidget = addAttribute(componentName, null, parameterName, type, parameterSchema);
         newWidget.setValue(defaultValue);
+        newWidget.parameterRow = newParamRow;
         newParamRow.add(newWidget);
         return newParamRow;
       }
@@ -339,6 +369,8 @@ function Attributes (editor) {
     var widget = widgets[id];
 
     handleEntityChange(entity, componentName, property, widget.getValue());
+
+    updateWidgetVisibility(entity);
 
     editor.signals.objectChanged.dispatch(entity.object3D);
     ignoreComponentsChange = false;
