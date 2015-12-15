@@ -23,8 +23,8 @@ function Attributes (editor) {
   var widgets = {};
   function addAttribute (componentName, attributeName, property, type, parameterSchema) {
     var widget = null;
-    if (typeof parameterSchema ==='undefined') {
-      parameterSchema={};
+    if (typeof parameterSchema === 'undefined') {
+      parameterSchema = {};
     }
     switch (type) {
       case 'select':
@@ -54,10 +54,10 @@ function Attributes (editor) {
         console.warn('Unknown component type', componentName, attributeName, property, type);
         widget = new UI.Input('');
     }
-    if (parameterSchema.hasOwnProperty("min")) {
+    if (parameterSchema.hasOwnProperty('min')) {
       widget.min = parameterSchema.min;
     }
-    if (parameterSchema.hasOwnProperty("max")) {
+    if (parameterSchema.hasOwnProperty('max')) {
       widget.max = parameterSchema.max;
     }
     widget.schema = parameterSchema; // Hack
@@ -221,10 +221,9 @@ function Attributes (editor) {
     updateWidgetVisibility(entity);
   }
 
-  function updateWidgetVisibility(entity) {
+  function updateWidgetVisibility (entity) {
     // Apply visibility
-    for (var componentName in entity.components)
-    {
+    for (var componentName in entity.components) {
       var properties = aframeCore.components[componentName].schema;
       for (var property in properties) {
         var id = componentName + '.' + property;
@@ -234,7 +233,7 @@ function Attributes (editor) {
           if (widget.schema.if) {
             for (var condition in widget.schema.if) {
               var ifWidget = widgets[componentName + '.' + condition];
-              if (widget.schema.if[condition].indexOf(ifWidget.getValue()) ===-1) {
+              if (widget.schema.if[condition].indexOf(ifWidget.getValue()) === -1) {
                 visible = false;
               }
             }
@@ -287,11 +286,11 @@ function Attributes (editor) {
         switch (action) {
           case 'Delete':
             entity.removeAttribute(this.getId());
-          break;
+            break;
 
           case 'Clear':
             setEmptyComponent(entity, this.getId());
-          break;
+            break;
 
           default:
             return;

@@ -1,4 +1,4 @@
-/* global aframeEditor aframeCore */
+/* global aframeEditor */
 var Panels = require('./panels');
 var Signals = require('signals');
 var Viewport = require('./viewport');
