@@ -12,72 +12,86 @@ function SceneGraph (editor) {
   document.getElementsByTagName('head')[0].appendChild(link);
   // ------------
 
+  this.scene = document.querySelector('a-scene');
+
   var signals = editor.signals;
 
   var container = new UI.Panel();
-  container.setBorderTop('0');
-  container.setPaddingTop('20px');
 
   var ignoreObjectSelectedSignal = false;
 
-  var outliner = new UI.Outliner(editor);
-  outliner.onChange(function () {
+  var outliner = this.outliner = new UI.Outliner(editor);
+
+  // handle entity selection change in panel
+  outliner.onChange(function (e) {
     ignoreObjectSelectedSignal = true;
     aframeEditor.editor.signals.entitySelected.dispatch(outliner.getValue());
     ignoreObjectSelectedSignal = false;
   });
-  container.add(outliner);
-  container.add(new UI.Break());
 
-  function refreshUI () {
-    var scene = document.querySelector('a-scene');
-    var options = [];
-
-    options.push({ static: true, value: scene, html: '<span class="type"></span> a-scene' });
-
-    function treeIterate (element, depth) {
-      if (depth === undefined) {
-        depth = 1;
-      } else {
-        depth += 1;
-      }
-
-      var children = element.children;
-      for (var i = 0; i < children.length; i++) {
-        var child = children[i];
-
-        // filter out all entities added by editor
-        if (!child.dataset.isEditor) {
-          var extra = '';
-          var icons = {'camera': 'fa-video-camera', 'light': 'fa-lightbulb-o', 'geometry': 'fa-cube', 'material': 'fa-picture-o'};
-          for (var icon in icons) {
-            if (child.components[icon]) {
-              extra += ' <i class="fa ' + icons[icon] + '"></i>';
-            }
-          }
-
-          var type = 'Mesh';
-          var pad = '&nbsp;&nbsp;&nbsp;'.repeat(depth);
-          options.push({static: true, value: child, html: pad + '<span class="type ' + type + '"></span> ' + (child.id ? child.id : 'a-entity') + extra});
-        }
-
-        treeIterate(child, depth);
-      }
-    }
-    treeIterate(scene);
-    outliner.setOptions(options);
-  }
-
-  refreshUI();
-
-  signals.sceneGraphChanged.add(refreshUI);
-
+  // handle enttiy change selection from scene.
   signals.objectSelected.add(function (object) {
-    if (ignoreObjectSelectedSignal === true) return;
+    // ignore automated selection of object in scene triggered from outliner.
+    if (ignoreObjectSelectedSignal === true) { return; }
+    // set outliner to current selected object
     outliner.setValue(object !== null ? object.el : null);
   });
 
+  signals.sceneGraphChanged.add(this.refresh);
+
+  container.add(outliner);
+
+  container.add(new UI.Break());
+
+  this.refresh();
+
   return container;
 }
+
+SceneGraph.prototype.refresh = function () {
+  var options = [];
+
+  options.push({ static: true, value: this.scene, html: '<span class="type"></span> a-scene' });
+
+  function treeIterate (element, depth) {
+    if (depth === undefined) {
+      depth = 1;
+    } else {
+      depth += 1;
+    }
+
+    var children = element.children;
+
+    for (var i = 0; i < children.length; i++) {
+      var child = children[i];
+
+      // filter out all entities added by editor
+      if (!child.dataset.isEditor) {
+        var extra = '';
+
+        var icons = {'camera': 'fa-video-camera', 'light': 'fa-lightbulb-o', 'geometry': 'fa-cube', 'material': 'fa-picture-o'};
+        for (var icon in icons) {
+          if (child.components[icon]) {
+            extra += ' <i class="fa ' + icons[icon] + '"></i>';
+          }
+        }
+
+        var type = '<span class="type Mesh"></span>';
+        var pad = '&nbsp;&nbsp;&nbsp;'.repeat(depth);
+        var label = child.id ? child.id : 'a-entity';
+
+        options.push({
+          static: true,
+          value: child,
+          html: pad + type + label + extra
+        });
+      }
+      treeIterate(child, depth);
+    }
+  }
+  treeIterate(this.scene);
+
+  this.outliner.setOptions(options);
+};
 
 module.exports = SceneGraph;
