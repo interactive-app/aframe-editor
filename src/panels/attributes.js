@@ -1,83 +1,30 @@
 /* global aframeCore */
 var UI = require('../../lib/vendor/ui.js'); // @todo will be replaced with the npm package
-
-function handleEntityChange (entity, name, property, value) {
-  if (property) {
-    // multiple attribute properties
-    var properties = entity.getAttribute(name);
-    properties[property] = value;
-    entity.setAttribute(name, properties);
-  } else {
-    // single attribute value
-    entity.setAttribute(name, value);
-  }
-}
+var WidgetsFactory = require('./widgetsfactory.js'); // @todo will be replaced with the npm package
 
 function Attributes (editor) {
   var objectId, objectType, objectCustomRow;
   var componentsList;
-  var widgets = {};
   var ignoreComponentsChange = false;
+  var commonComponents = ['position', 'rotation', 'scale', 'visible'];
 
   /**
-   * Creates and returns a widget based on the type of the attribute
-   * If a schema is provided it's used to set min/max values or populate the combobox values.
-   * @param {string} componentName   Name of the component that has this attribute (e.g: 'geometry')
-   * @param {string} attributeName   Attribute name in the component (e.g: 'primitive')
-   * @param {string} property        Property name in case of multivalues attributes (e.g: 'x')
-   * @param {string} type            Type of the widget to generate (e.g: 'checkbox')
-   * @param {JSON} parameterSchema [Optional] JSON with the schema definition of the attribute.
-   * @return {UI.Widget} Returns an UI.js widget based on the type and schema of the attribute.
+   * Update the entity component value
+   * @param  {Element} entity   Entity to modify
+   * @param  {string} component     Name of the component
+   * @param  {string} property Property name
+   * @param  {string|number} value    New value
    */
-  function addAttribute (componentName, attributeName, property, type, parameterSchema) {
-    var widget = null;
-    if (typeof parameterSchema === 'undefined') {
-      parameterSchema = {};
+  function handleEntityChange (entity, componentName, property, value) {
+    if (property) {
+      // multiple attribute properties
+      var properties = entity.getAttribute(componentName);
+      properties[property] = value;
+      entity.setAttribute(componentName, properties);
+    } else {
+      // single attribute value
+      entity.setAttribute(componentName, value);
     }
-    switch (type) {
-      case 'select':
-        var options = {};
-        // Convert array to object
-        for (var key in parameterSchema.oneOf) {
-          options[parameterSchema.oneOf[key]] = parameterSchema.oneOf[key];
-        }
-        widget = new UI.Select().setOptions(options);
-        break;
-      case 'checkbox':
-        widget = new UI.Checkbox().setWidth('50px');
-        break;
-      case 'number':
-        widget = new UI.Number().setWidth('50px');
-        break;
-      case 'input':
-        widget = new UI.Input('').setWidth('50px');
-        break;
-      case 'color':
-        widget = new UI.Color().setWidth('50px');
-        break;
-      case 'vector3':
-        widget = new UI.Vector3().setWidth('150px');
-        break;
-      default:
-        console.warn('Unknown component type', componentName, attributeName, property, type);
-        widget = new UI.Input('');
-    }
-    if (parameterSchema.hasOwnProperty('min')) {
-      widget.min = parameterSchema.min;
-    }
-    if (parameterSchema.hasOwnProperty('max')) {
-      widget.max = parameterSchema.max;
-    }
-    widget.schema = parameterSchema;
-    widget.onChange(function (event) {
-      updateEntityValue(event, componentName, attributeName, property);
-    });
-
-    // Generate an unique ID for this attribute (e.g: geometry.primitive)
-    // and save it on the widgets variable so we could easily access to it in the following functions
-    var id = attributeName ? componentName + '.' + attributeName + '.' + property : property ? (componentName + '.' + property) : componentName;
-    widgets[id] = widget;
-    return widget;
   }
 
   /**
@@ -90,7 +37,7 @@ function Attributes (editor) {
    *   - visible
    * @return {UI.CollapsiblePanel} Panel containing all the widgets
    */
-  function generateCommonAttributes () {
+  function generateCommonComponentsPanel () {
     var container = new UI.CollapsiblePanel();
 
     container.addStatic(new UI.Text('Common attributes').setTextTransform('uppercase'));
@@ -105,7 +52,7 @@ function Attributes (editor) {
 
     container.add(objectTypeRow);
 
-    // name
+    // ID
     var objectIdRow = new UI.Row();
     objectId = new UI.Input().setWidth('150px').setFontSize('12px').onChange(function () {
       handleEntityChange(editor.selected.el, 'id', null, objectId.getValue());
@@ -116,57 +63,20 @@ function Attributes (editor) {
     objectIdRow.add(objectId);
     container.add(objectIdRow);
 
-    // Position
-    var objectPositionRow = new UI.Row();
-    var objectPositionX = addAttribute('position', null, 'x', 'number');
-    var objectPositionY = addAttribute('position', null, 'y', 'number');
-    var objectPositionZ = addAttribute('position', null, 'z', 'number');
-
-    objectPositionRow.add(new UI.Text('Position').setWidth('90px'));
-    objectPositionRow.add(objectPositionX, objectPositionY, objectPositionZ);
-
-    container.add(objectPositionRow);
-
-    // Rotation
-    var objectOrientationRow = new UI.Row();
-    var objectRotationX = addAttribute('rotation', null, 'x', 'number');
-    var objectRotationY = addAttribute('rotation', null, 'y', 'number');
-    var objectRotationZ = addAttribute('rotation', null, 'z', 'number');
-
-    objectOrientationRow.add(new UI.Text('Rotation').setWidth('90px'));
-    objectOrientationRow.add(objectRotationX, objectRotationY, objectRotationZ);
-
-    container.add(objectOrientationRow);
-
-    // Scale
-    var objectScaleRow = new UI.Row();
-    var objectScaleX = addAttribute('scale', null, 'x', 'number');
-    var objectScaleY = addAttribute('scale', null, 'y', 'number');
-    var objectScaleZ = addAttribute('scale', null, 'z', 'number');
-
-    objectScaleRow.add(new UI.Text('Scale').setWidth('90px'));
-    objectScaleRow.add(objectScaleX, objectScaleY, objectScaleZ);
-
-    container.add(objectScaleRow);
-
-    // Visible
-    var objectVisibleRow = new UI.Row();
-    var objectVisible = addAttribute('visible', null, null, 'checkbox').setValue(1);
-
-    objectVisibleRow.add(new UI.Text('Visible').setWidth('90px'));
-    objectVisibleRow.add(objectVisible);
-
-    container.add(objectVisibleRow);
+    // Add the parameter rows for the common components
+    for (var i = 0; i < commonComponents.length; i++) {
+      container.add(getPropertyRow(commonComponents[i], null, aframeCore.components[commonComponents[i]].schema));
+    }
 
     return container;
   }
 
   /**
    * Add component to the entity
-   * @param {a-entity} entity        Entity
+   * @param {Element} entity        Entity
    * @param {string} componentName Component name
    */
-  function addComponent (entity, componentName) {
+  function addComponentToEntity (entity, componentName) {
     entity.setAttribute(componentName, '');
     generateComponentsPanels(entity);
     updateUI(entity);
@@ -179,9 +89,8 @@ function Attributes (editor) {
   function generateAddComponentRow () {
     var componentsRow = new UI.Row();
     var componentsOptions = {};
-    var ignoredComponents = ['position', 'rotation', 'scale', 'visible'];
     for (var name in aframeCore.components) {
-      if (ignoredComponents.indexOf(name) === -1) {
+      if (commonComponents.indexOf(name) === -1) {
         componentsOptions[name] = name;
       }
     }
@@ -191,7 +100,7 @@ function Attributes (editor) {
     componentsRow.add(componentsList);
     var button = new UI.Button('+').onClick(function () {
       // Add the selected component from the combobox to the current active entity
-      addComponent(editor.selected.el, componentsList.getValue());
+      addComponentToEntity(editor.selected.el, componentsList.getValue());
     });
     componentsRow.add(button.setWidth('20px'));
     return componentsRow;
@@ -199,7 +108,7 @@ function Attributes (editor) {
 
   /**
    * Update the UI widgets based on the current entity & components values
-   * @param  {a-entity} entity Entity currently selected
+   * @param  {Element} entity Entity currently selected
    */
   function updateUI (entity) {
     if (ignoreComponentsChange) {
@@ -219,52 +128,22 @@ function Attributes (editor) {
     // Update the value of the widgets based on the entity's components's attributes
     var components = Array.prototype.slice.call(entity.attributes);
     components.forEach(function (component) {
-      var attributes = entity.getAttribute(component.name);
-      for (var attribute in attributes) {
-        var id = component.name + '.' + attribute;
-        var widget = widgets[id];
+      var properties = entity.getAttribute(component.name);
+      for (var property in properties) {
+        var id = component.name + '.' + property;
+        var widget = WidgetsFactory.widgets[id];
         if (widget) {
-          widget.setValue(attributes[attribute]);
+          widget.setValue(properties[property]);
         }
       }
     });
 
-    updateWidgetVisibility(entity);
-  }
-
-  /**
-   * Update the widgets visibility based on the 'if' attribute from theirs attribute' schema
-   * @param  {a-entity} entity Entity currently selected
-   */
-  function updateWidgetVisibility (entity) {
-    for (var componentName in entity.components) {
-      var properties = aframeCore.components[componentName].schema;
-      for (var property in properties) {
-        var id = componentName + '.' + property;
-        var widget = widgets[id];
-        if (widget && widget.parameterRow) {
-          var visible = true;
-          if (widget.schema.if) {
-            for (var condition in widget.schema.if) {
-              var ifWidget = widgets[componentName + '.' + condition];
-              if (widget.schema.if[condition].indexOf(ifWidget.getValue()) === -1) {
-                visible = false;
-              }
-            }
-          }
-          if (visible) {
-            widget.parameterRow.show();
-          } else {
-            widget.parameterRow.hide();
-          }
-        }
-      }
-    }
+    WidgetsFactory.updateWidgetVisibility(entity);
   }
 
   /**
    * Reset to default (clear) one entity's component
-   * @param {a-entity} entity        Entity
+   * @param {Element} entity        Entity
    * @param {string} componentName Component name to clear
    */
   function setEmptyComponent (entity, componentName) {
@@ -277,61 +156,51 @@ function Attributes (editor) {
   /**
    * Generates a row containing the parameter label and its widget
    * @param {string} componentName   Component name
-   * @param {string} component   Component element
-   * @param {string} parameterName   Parameter name
-   * @param {object} parameterSchema Parameter schema
+   * @param {string} propertyName   Property name
+   * @param {object} propertySchema Property schema
    */
-  function addParameterRow (componentName, component, parameterName, parameterSchema) {
-    var newParamRow = new UI.Row();
-    newParamRow.add(new UI.Text(parameterName).setWidth('120px'));
+  function getPropertyRow (componentName, propertyName, propertySchema) {
+    var propertyRow = new UI.Row();
+    var panelName = propertyName || componentName;
+    propertyRow.add(new UI.Text(panelName).setWidth('120px'));
 
-    var defaultValue = parameterSchema.default;
-    var type = null;
-    if (parameterSchema.oneOf) {
-      type = 'select';
-    } else {
-      switch (typeof defaultValue) {
-        case 'boolean':
-          type = 'checkbox';
-          break;
-        case 'number':
-          type = 'number';
-          break;
-        case 'object':
-          type = 'vector3';
-          break;
-        case 'string':
-          if (defaultValue.indexOf('#') === -1) {
-            type = 'input';
-          } else {
-            type = 'color';
-          }
-          break;
-        default:
-          console.warn(parameterName, component.defaults[parameterName], typeof component.defaults[parameterName]);
+    // If there's no propertyName it's considered a compound attribute.
+    // eg: Position, Rotation & Scale are considered a compound attribute of type 'vector3'
+    //    schema: {
+    //        x: { default: 0 },
+    //        y: { default: 0 },
+    //        z: { default: 0 }
+    //    }
+    //
+    // We should check also if the schema has a 'default' key in that case we're dealing
+    // with a single property components like 'visible':
+    //    schema: { default: true },
+    if (!propertyName && !propertySchema.hasOwnProperty('default')) {
+      // It's a compoundComponent like Position, Rotation or Scale
+      for (propertyName in propertySchema) {
+        var propertyWidget = WidgetsFactory.getWidgetFromProperty(componentName, null, propertyName, updateEntityValue, propertySchema[propertyName]);
+        propertyWidget.propertyRow = propertyRow;
+        propertyRow.add(propertyWidget);
       }
+    } else {
+      var newWidget = WidgetsFactory.getWidgetFromProperty(componentName, null, propertyName, updateEntityValue, propertySchema);
+      newWidget.propertyRow = propertyRow;
+      propertyRow.add(newWidget);
     }
-    var newWidget = addAttribute(componentName, null, parameterName, type, parameterSchema);
-    newWidget.setValue(defaultValue);
-    newWidget.parameterRow = newParamRow;
-    newParamRow.add(newWidget);
-    return newParamRow;
+
+    return propertyRow;
   }
 
   /**
    * Generate an UI.CollapsiblePanel for each entity's component
-   * @param  {a-entity} entity Current selected entity
+   * @param  {Element} entity Current selected entity
    */
   function generateComponentsPanels (entity) {
-    var componentsToIgnore = [
-      'position', 'rotation', 'scale', 'visible'
-    ];
-
     objectCustomRow.clear();
 
     for (var componentName in entity.components) {
       // Ignore the components that we've already included on the common attributes panel
-      if (componentsToIgnore.indexOf(componentName) !== -1) {
+      if (commonComponents.indexOf(componentName) !== -1) {
         continue;
       }
 
@@ -377,8 +246,8 @@ function Attributes (editor) {
       container.add(new UI.Break());
 
       // Add a widget's row for each parameter on the component
-      for (var parameterName in component.schema) {
-        container.add(addParameterRow(componentName, component, parameterName, component.schema[parameterName]));
+      for (var propertyName in component.schema) {
+        container.add(getPropertyRow(componentName, propertyName, component.schema[propertyName]));
       }
 
       container.add(new UI.Break());
@@ -398,11 +267,11 @@ function Attributes (editor) {
     var entity = editor.selected.el;
 
     var id = attributeName ? componentName + '.' + attributeName + '.' + property : property ? (componentName + '.' + property) : componentName;
-    var widget = widgets[id];
+    var widget = WidgetsFactory.widgets[id];
 
     handleEntityChange(entity, componentName, property, widget.getValue());
 
-    updateWidgetVisibility(entity);
+    WidgetsFactory.updateWidgetVisibility(entity);
 
     editor.signals.objectChanged.dispatch(entity.object3D);
     ignoreComponentsChange = false;
@@ -415,7 +284,7 @@ function Attributes (editor) {
   container.setDisplay('none');
 
   // Add common attributes panel (type, id, position, rotation, scale, visible)
-  container.add(generateCommonAttributes());
+  container.add(generateCommonComponentsPanel());
 
   // Append the components list that the user can add to the selected entity
   container.add(generateAddComponentRow());
