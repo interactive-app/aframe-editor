@@ -15,14 +15,11 @@ function Attributes (editor) {
    * @param  {string} property Property name
    * @param  {string|number} value    New value
    */
-  function handleEntityChange (entity, componentName, property, value) {
-    if (property) {
-      // multiple attribute properties
-      var properties = entity.getAttribute(componentName);
-      properties[property] = value;
-      entity.setAttribute(componentName, properties);
+  function handleEntityChange (entity, componentName, propertyName, value) {
+    console.log(componentName, propertyName, value);
+    if (propertyName) {
+      entity.setAttribute(componentName, propertyName, value);
     } else {
-      // single attribute value
       entity.setAttribute(componentName, value);
     }
   }
