@@ -70,7 +70,7 @@ function Attributes (editor) {
     }
     widget.schema = parameterSchema;
     widget.onChange(function (event) {
-      update(event, componentName, attributeName, property);
+      updateEntityValue(event, componentName, attributeName, property);
     });
 
     // Generate an unique ID for this attribute (e.g: geometry.primitive)
@@ -393,7 +393,7 @@ function Attributes (editor) {
    * @param  {string} attributeName Attribute name being modified (eg: 'primitive')
    * @param  {string} property      Property name, if any, being modified (eg: 'x')
    */
-  function update (event, componentName, attributeName, property) {
+  function updateEntityValue (event, componentName, attributeName, property) {
     ignoreComponentsChange = true;
     var entity = editor.selected.el;
 
