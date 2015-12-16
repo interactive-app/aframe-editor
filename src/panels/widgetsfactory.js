@@ -5,6 +5,20 @@ module.exports = {
   widgets: {},
 
   /**
+   * [updateWidgetValue description]
+   * @param  {[type]} id    [description]
+   * @param  {[type]} value [description]
+   * @return {[type]}       [description]
+   */
+  updateWidgetValue: function (id, value) {
+    if (this.widgets[id]) {
+      this.widgets[id].setValue(value);
+      return true;
+    }
+    return false;
+  },
+
+  /**
    * Given an propertySchema it will returns the infered by the default value in case
    * that 'type' attribute is not defined
    * @param  {object} propertySchema JSON schema for the attribute

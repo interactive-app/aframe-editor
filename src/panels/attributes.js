@@ -16,7 +16,6 @@ function Attributes (editor) {
    * @param  {string|number} value    New value
    */
   function handleEntityChange (entity, componentName, propertyName, value) {
-    console.log(componentName, propertyName, value);
     if (propertyName) {
       entity.setAttribute(componentName, propertyName, value);
     } else {
@@ -122,15 +121,29 @@ function Attributes (editor) {
       availableComponents[i].disabled = entity.getAttribute(availableComponents[i].value);
     }
 
-    // Update the value of the widgets based on the entity's components's attributes
-    var components = Array.prototype.slice.call(entity.attributes);
-    components.forEach(function (component) {
+    // Set the common properties & components to default as they're not recreated
+    // as the entity changed
+    for (i = 0; i < commonComponents.length; i++) {
+      var componentName = commonComponents[i];
+      var component = aframeCore.components[componentName];
+      if (component.schema.hasOwnProperty('default')) {
+        WidgetsFactory.updateWidgetValue(componentName, component.schema.default);
+      } else {
+        for (var propertyName in component.schema) {
+          WidgetsFactory.updateWidgetValue(componentName + '.' + propertyName, component.schema[propertyName].default);
+        }
+      }
+    }
+
+    var entityComponents = Array.prototype.slice.call(entity.attributes);
+    entityComponents.forEach(function (component) {
       var properties = entity.getAttribute(component.name);
-      for (var property in properties) {
-        var id = component.name + '.' + property;
-        var widget = WidgetsFactory.widgets[id];
-        if (widget) {
-          widget.setValue(properties[property]);
+      if (typeof properties !== 'object') {
+        WidgetsFactory.updateWidgetValue(component.name, properties);
+      } else {
+        for (var property in properties) {
+          var id = component.name + '.' + property;
+          WidgetsFactory.updateWidgetValue(id, properties[property]);
         }
       }
     });
