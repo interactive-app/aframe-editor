@@ -23,7 +23,9 @@ function Viewport (editor) {
   });
 
   signals.objectChanged.add(function () {
-    if (editor.selected.el.helper) { return; }
+    if (editor.selected.el.helper) {
+      return;
+    }
     selectionBox.update(editor.selected);
   });
 }
