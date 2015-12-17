@@ -53,7 +53,7 @@ Editor.prototype = {
       objectSelected: new Signals.Signal(),
       entitySelected: new Signals.Signal(),
       objectChanged: new Signals.Signal(),
-      componentChanged: new Signals.Signal()
+      componentChanged: new Signals.Signal(),
     };
 
     this.signals.entitySelected.add(function (entity) {

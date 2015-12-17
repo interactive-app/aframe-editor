@@ -4,6 +4,15 @@ var EditorControls = require('../../lib/vendor/threejs/EditorControls.js');
 var MouseControls = require('./mousecontrols.js');
 
 function Viewport (editor) {
+
+  this.DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 1, 10000);
+  this.DEFAULT_CAMERA.name = 'Camera';
+  this.DEFAULT_CAMERA.position.set(20, 10, 20);
+  this.DEFAULT_CAMERA.lookAt(new THREE.Vector3());
+
+  this.camera = this.DEFAULT_CAMERA;
+  //editor.sceneEl.camera = this.camera;
+
   var signals = editor.signals;
 
   var selectionBox = new THREE.BoxHelper();
@@ -15,15 +24,20 @@ function Viewport (editor) {
   var objectPositionOnDown = null;
   var objectRotationOnDown = null;
   var objectScaleOnDown = null;
-  var transformControls = new THREE.TransformControls(editor.camera, editor.container);
+  var transformControls = new THREE.TransformControls(this.camera, editor.container);
 
   transformControls.addEventListener('change', function () {
+
     var object = transformControls.object;
     if (object !== undefined) {
       selectionBox.update(object);
       if (editor.helpers[ object.id ] !== undefined) {
         editor.helpers[ object.id ].update();
       }
+
+      console.log(object.position.x,object.position.y,object.position.z);
+      object.el.setAttribute('position',object.position.x.toFixed(2)+' '+object.position.y.toFixed(2)+' '+object.position.z.toFixed(2));
+      
       // !!!editor.signals.refreshSidebarObject3D.dispatch(object);
     }
   });
@@ -42,26 +56,38 @@ function Viewport (editor) {
     var object = transformControls.object;
     if (object !== null) {
       switch (transformControls.getMode()) {
-        /*
         case 'translate':
 
           if (!objectPositionOnDown.equals(object.position)) {
-            editor.execute(new SetPositionCommand(object, object.position, objectPositionOnDown));
+            /*
+            object.el.setAttribute('position','x', object.position.x);
+            object.el.setAttribute('position','y', object.position.y);
+            object.el.setAttribute('position','z', object.position.z);
+            */
           }
           break;
 
         case 'rotate':
+          function rad2deg(angle) {
+            return angle * 57.29577951308232; // angle / Math.PI * 180
+          }
           if (! objectRotationOnDown.equals(object.rotation)) {
-            editor.execute(new SetRotationCommand(object, object.rotation, objectRotationOnDown));
+            //object.el.setAttribute('rotation','x', object.rotation.x);
+            //object.el.setAttribute('rotation','y', object.rotation.y);
+            /*object.el.setAttribute('rotation','x', rad2deg(object.rotation.x));
+            object.el.setAttribute('rotation','y', rad2deg(object.rotation.y));
+            object.el.setAttribute('rotation','z', rad2deg(object.rotation.z));
+            */
           }
           break;
 
         case 'scale':
           if (! objectScaleOnDown.equals(object.scale)) {
-            editor.execute(new SetScaleCommand(object, object.scale, objectScaleOnDown));
+            object.el.setAttribute('scale','x', object.scale.x);
+            object.el.setAttribute('scale','y', object.scale.y);
+            object.el.setAttribute('scale','z', object.scale.z);
           }
           break;
-          */
       }
     }
     controls.enabled = true;
@@ -93,13 +119,14 @@ function Viewport (editor) {
     selectionBox.update(editor.selected);
   });
 
+//  transformControls.setMode('rotate');
   // controls need to be added *after* main logic,
   // otherwise controls.enabled doesn't work.
 
-  var controls = new THREE.EditorControls(editor.camera, editor.container);
+  var controls = new THREE.EditorControls(this.camera, editor.container);
   controls.addEventListener('change', function () {
     transformControls.update();
-    //!!!editor.signals.cameraChanged.dispatch(editor.camera);
+    //!!!editor.signals.cameraChanged.dispatch(this.camera);
   });
 };
 

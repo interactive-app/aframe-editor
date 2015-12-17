@@ -60,11 +60,15 @@ Panel.prototype.onToggleClick = function (e) {
   this.active = this.active === false;
 
   if (this.active) {
+    aframeEditor.editor.sceneEl.camera = aframeEditor.editor.viewport.camera;
+
     this.toggleButton.innerHTML = 'Exit';
     this.selectTool();
     this.showTools(true);
     aframeEditor.editor.helpers.show();
   } else {
+    aframeEditor.editor.sceneEl.camera = null;
+
     this.toggleButton.innerHTML = 'Edit';
     this.endCurrentTool();
     this.showTools(false);
