@@ -40,6 +40,14 @@ function SceneGraph (editor) {
   signals.sceneGraphChanged.add(this.refresh);
 
   container.add(outliner);
+  var buttonRemove = new UI.Button('-').onClick(function () {
+    if (editor.selectedEntity) {
+      editor.selectedEntity.parentNode.removeChild(editor.selectedEntity);
+      editor.signals.entitySelected.dispatch(null);
+      this.refresh();
+    }
+  }.bind(this));
+  container.add(buttonRemove);
 
   container.add(new UI.Break());
 
@@ -50,7 +58,6 @@ function SceneGraph (editor) {
 
 SceneGraph.prototype.refresh = function () {
   var options = [];
-
   options.push({ static: true, value: this.scene, html: '<span class="type"></span> a-scene' });
 
   function treeIterate (element, depth) {
@@ -59,7 +66,6 @@ SceneGraph.prototype.refresh = function () {
     } else {
       depth += 1;
     }
-
     var children = element.children;
 
     for (var i = 0; i < children.length; i++) {
