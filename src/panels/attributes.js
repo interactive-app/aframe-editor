@@ -172,7 +172,8 @@ function Attributes (editor) {
   function getPropertyRow (componentName, propertyName, propertySchema) {
     var propertyRow = new UI.Row();
     var panelName = propertyName || componentName;
-    propertyRow.add(new UI.Text(panelName).setWidth('120px'));
+    var label = new UI.Text(panelName);
+    propertyRow.add(label);
 
     // If there's no propertyName it's considered a compound attribute.
     // eg: Position, Rotation & Scale are considered a compound attribute of type 'vector3'
@@ -187,12 +188,16 @@ function Attributes (editor) {
     //    schema: { default: true },
     if (!propertyName && !propertySchema.hasOwnProperty('default')) {
       // It's a compoundComponent like Position, Rotation or Scale
+      label.setWidth('90px');
+      var propertyWidgetSize = 150 / Object.keys(propertySchema).length;
       for (propertyName in propertySchema) {
         var propertyWidget = WidgetsFactory.getWidgetFromProperty(componentName, null, propertyName, updateEntityValue, propertySchema[propertyName]);
+        propertyWidget.setWidth(propertyWidgetSize + 'px');
         propertyWidget.propertyRow = propertyRow;
         propertyRow.add(propertyWidget);
       }
     } else {
+      label.setWidth('120px');
       var newWidget = WidgetsFactory.getWidgetFromProperty(componentName, null, propertyName, updateEntityValue, propertySchema);
       newWidget.propertyRow = propertyRow;
       propertyRow.add(newWidget);
