@@ -12,6 +12,7 @@ Editor.prototype = {
   onDomLoaded: function () {
     this.tools = require('./tools');
     this.sceneEl = document.querySelector('a-scene');
+    this.container = document.querySelector('.a-canvas');
 
     if (this.sceneEl.hasLoaded) {
       this.initUI();
@@ -22,7 +23,20 @@ Editor.prototype = {
 
   initUI: function () {
     this.cameraEl = this.sceneEl.cameraEl;
-    this.camera = this.cameraEl.object3D;
+
+    function findPerspectiveCamera(object) {
+      if (object instanceof THREE.PerspectiveCamera) {
+        return object;
+      } else if (object.children.length > 0) {
+        for (var i = 0; i < object.children.length; i++) {
+          var obj = findPerspectiveCamera(object.children[i]);
+          if (obj)
+            return obj;
+        }
+      }
+      return null;
+    }
+    this.camera = findPerspectiveCamera(this.cameraEl.object3D);
 
     this.initEvents();
 
