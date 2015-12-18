@@ -1,7 +1,7 @@
 /* global THREE */
 var TransformControls = require('../../lib/vendor/threejs/TransformControls.js');
 var EditorControls = require('../../lib/vendor/threejs/EditorControls.js');
-var MouseControls = require('./mousecontrols.js');
+//var MouseControls = require('./mousecontrols.js');
 
 function Viewport (editor) {
 
@@ -52,6 +52,7 @@ function Viewport (editor) {
     controls.enabled = false;
   });
 
+  var objects=[];
   transformControls.addEventListener('mouseUp', function () {
     var object = transformControls.object;
     if (object !== null) {
@@ -122,6 +123,137 @@ function Viewport (editor) {
 //  transformControls.setMode('rotate');
   // controls need to be added *after* main logic,
   // otherwise controls.enabled doesn't work.
+
+
+  // object picking
+
+  var raycaster = new THREE.Raycaster();
+  var mouse = new THREE.Vector2();
+
+  // events
+
+  var camera = this.camera; //?
+  function getIntersects( point, objects ) {
+
+    mouse.set( ( point.x * 2 ) - 1, - ( point.y * 2 ) + 1 );
+
+    raycaster.setFromCamera( mouse, camera );
+
+    return raycaster.intersectObjects( objects );
+
+  }
+
+  var onDownPosition = new THREE.Vector2();
+  var onUpPosition = new THREE.Vector2();
+  var onDoubleClickPosition = new THREE.Vector2();
+
+  function getMousePosition( dom, x, y ) {
+
+    var rect = dom.getBoundingClientRect();
+    console.log(rect, x, y);
+    return [ ( x - rect.left ) / rect.width, ( y - rect.top ) / rect.height ];
+
+  }
+
+  function handleClick() {
+    console.log(onDownPosition,onUpPosition);
+    if ( onDownPosition.distanceTo( onUpPosition ) === 0 ) {
+
+      var intersects = getIntersects( onUpPosition, objects );
+      console.info(intersects);
+
+      if ( intersects.length > 0 ) {
+
+        var object = intersects[ 0 ].object;
+        console.log(object);
+
+        if ( object.userData.object !== undefined ) {
+
+          // helper
+          editor.select( object.userData.object );
+
+        } else {
+
+          editor.select( object );
+
+        }
+
+      } else {
+
+        editor.select( null );
+
+      }
+
+//      render();
+
+    }
+
+  }
+
+  function onMouseDown( event ) {
+    event.preventDefault();
+
+    var array = getMousePosition( editor.container, event.clientX, event.clientY );
+    onDownPosition.fromArray( array );
+
+    document.addEventListener( 'mouseup', onMouseUp, false );
+
+  }
+
+  function onMouseUp( event ) {
+    console.error(event);
+    var array = getMousePosition( editor.container, event.clientX, event.clientY );
+    onUpPosition.fromArray( array );
+    handleClick();
+
+    document.removeEventListener( 'mouseup', onMouseUp, false );
+
+  }
+
+  function onTouchStart( event ) {
+
+    var touch = event.changedTouches[ 0 ];
+
+    var array = getMousePosition( editor.container, touch.clientX, touch.clientY );
+    onDownPosition.fromArray( array );
+
+    document.addEventListener( 'touchend', onTouchEnd, false );
+
+  }
+
+  function onTouchEnd( event ) {
+
+    var touch = event.changedTouches[ 0 ];
+
+    var array = getMousePosition( editor.container, touch.clientX, touch.clientY );
+    onUpPosition.fromArray( array );
+
+    handleClick();
+
+    document.removeEventListener( 'touchend', onTouchEnd, false );
+
+  }
+
+  function onDoubleClick( event ) {
+
+    var array = getMousePosition( editor.container, event.clientX, event.clientY );
+    onDoubleClickPosition.fromArray( array );
+
+    var intersects = getIntersects( onDoubleClickPosition, objects );
+
+    if ( intersects.length > 0 ) {
+
+      var intersect = intersects[ 0 ];
+
+      signals.objectFocused.dispatch( intersect.object );
+
+    }
+
+  }
+
+  editor.container.addEventListener( 'mousedown', onMouseDown, false );
+  editor.container.addEventListener( 'touchstart', onTouchStart, false );
+  editor.container.addEventListener( 'dblclick', onDoubleClick, false );
 
   var controls = new THREE.EditorControls(this.camera, editor.container);
   controls.addEventListener('change', function () {

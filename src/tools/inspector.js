@@ -12,8 +12,8 @@ module.exports = {
     this.sidebar = aframeEditor.editor.panels.sidebar;
     this.sidebar.show();
 
-    this.setupCursor();
-    this.addListeners();
+  // this.setupCursor();
+  // this.addListeners();
   },
 
   end: function () {
