@@ -44,7 +44,22 @@ Editor.prototype = {
     this.panels = new Panels(this);
     this.scene = this.sceneEl.object3D;
     this.helpers = new Helpers(this);
-    this.viewport = new Viewport(this);
+
+    var objects=[];
+    function addObjects(object) {
+      if (object.children.length > 0) {
+        for (var i = 0; i < object.children.length; i++) {
+          var obj = object.children[i];
+          if (obj instanceof THREE.Mesh) {
+            objects.push(obj);
+          }
+          addObjects(obj);
+        }
+      }
+    }
+    addObjects(this.sceneEl.object3D);
+
+    this.viewport = new Viewport(this, objects);
   },
 
   initEvents: function () {

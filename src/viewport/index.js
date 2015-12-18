@@ -3,7 +3,7 @@ var TransformControls = require('../../lib/vendor/threejs/TransformControls.js')
 var EditorControls = require('../../lib/vendor/threejs/EditorControls.js');
 //var MouseControls = require('./mousecontrols.js');
 
-function Viewport (editor) {
+function Viewport (editor, objects) {
 
   this.DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 1, 10000);
   this.DEFAULT_CAMERA.name = 'Camera';
@@ -35,9 +35,7 @@ function Viewport (editor) {
         editor.helpers[ object.id ].update();
       }
 
-      console.log(object.position.x,object.position.y,object.position.z);
       object.el.setAttribute('position',object.position.x.toFixed(2)+' '+object.position.y.toFixed(2)+' '+object.position.z.toFixed(2));
-      
       // !!!editor.signals.refreshSidebarObject3D.dispatch(object);
     }
   });
@@ -52,7 +50,7 @@ function Viewport (editor) {
     controls.enabled = false;
   });
 
-  var objects=[];
+  var objects=objects;
   transformControls.addEventListener('mouseUp', function () {
     var object = transformControls.object;
     if (object !== null) {
@@ -165,7 +163,6 @@ function Viewport (editor) {
       if ( intersects.length > 0 ) {
 
         var object = intersects[ 0 ].object;
-        console.log(object);
 
         if ( object.userData.object !== undefined ) {
 
