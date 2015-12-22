@@ -25,7 +25,7 @@ function SceneGraph (editor) {
   // handle entity selection change in panel
   outliner.onChange(function (e) {
     ignoreObjectSelectedSignal = true;
-    aframeEditor.editor.signals.entitySelected.dispatch(outliner.getValue());
+    aframeEditor.editor.selectEntity(outliner.getValue());
     ignoreObjectSelectedSignal = false;
   });
 

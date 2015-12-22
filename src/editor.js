@@ -1,4 +1,4 @@
-/* global aframeEditor */
+/* global aframeEditor THREE */
 var Panels = require('./panels');
 var Signals = require('signals');
 var Viewport = require('./viewport');
@@ -22,30 +22,27 @@ Editor.prototype = {
   },
 
   initUI: function () {
-    this.cameraEl = this.sceneEl.cameraEl;
 
-    function findPerspectiveCamera(object) {
-      if (object instanceof THREE.PerspectiveCamera) {
-        return object;
-      } else if (object.children.length > 0) {
-        for (var i = 0; i < object.children.length; i++) {
-          var obj = findPerspectiveCamera(object.children[i]);
-          if (obj)
-            return obj;
-        }
-      }
-      return null;
-    }
-    this.camera = findPerspectiveCamera(this.cameraEl.object3D);
+    this.DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 1, 10000);
+    this.DEFAULT_CAMERA.name = 'Camera';
+    this.DEFAULT_CAMERA.position.set(20, 10, 20);
+    this.DEFAULT_CAMERA.lookAt(new THREE.Vector3());
+
+    this.camera = this.DEFAULT_CAMERA;
 
     this.initEvents();
 
     this.selected = null;
     this.panels = new Panels(this);
     this.scene = this.sceneEl.object3D;
-    this.helpers = new Helpers(this);
+    //this.helpers = new Helpers(this);
+    this.helpers = {};
+    this.sceneHelpers = new THREE.Scene();
+    this.sceneHelpers.visible = false;
+    this.scene.add(this.sceneHelpers);
+    this.editorActive = false;
 
-    var objects=[];
+    var objects = [];
     function addObjects(object) {
       if (object.children.length > 0) {
         for (var i = 0; i < object.children.length; i++) {
@@ -62,23 +59,41 @@ Editor.prototype = {
     this.viewport = new Viewport(this, objects);
   },
 
-  initEvents: function () {
-    this.signals = {
-      sceneGraphChanged: new Signals.Signal(),
-      objectSelected: new Signals.Signal(),
-      entitySelected: new Signals.Signal(),
-      objectChanged: new Signals.Signal(),
-      componentChanged: new Signals.Signal(),
-    };
-
-    this.signals.entitySelected.add(function (entity) {
+  selectEntity: function(entity) {
       this.selectedEntity = entity;
       if (entity) {
         this.select(entity.object3D);
       } else {
         this.select(null);
       }
+
+      this.signals.entitySelected.dispatch(entity);
+  },
+
+  initEvents: function () {
+    this.signals = {
+
+      sceneGraphChanged: new Signals.Signal(),
+      objectSelected: new Signals.Signal(),
+      entitySelected: new Signals.Signal(),
+      objectChanged: new Signals.Signal(),
+      componentChanged: new Signals.Signal(),
+
+      // custom
+      editorModeChanged: new Signals.Signal(),
+
+      // threejs
+      windowResize: new Signals.Signal()
+    };
+
+    this.signals.editorModeChanged.add(function(active) {
+      this.editorActive = active;
+
+      this.sceneHelpers.visible = this.editorActive;
     }.bind(this));
+
+    window.addEventListener('resize', this.signals.windowResize.dispatch, false);
+    this.signals.windowResize.dispatch();
 
     var entities = document.querySelectorAll('a-entity');
     for (var i = 0; i < entities.length; ++i) {

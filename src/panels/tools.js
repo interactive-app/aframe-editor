@@ -60,19 +60,19 @@ Panel.prototype.onToggleClick = function (e) {
   this.active = this.active === false;
 
   if (this.active) {
-    aframeEditor.editor.sceneEl.camera = aframeEditor.editor.viewport.camera;
+    aframeEditor.editor.signals.editorModeChanged.dispatch(true);
 
     this.toggleButton.innerHTML = 'Exit';
     this.selectTool();
     this.showTools(true);
-    aframeEditor.editor.helpers.show();
+    //aframeEditor.editor.helpers.show();
   } else {
-    aframeEditor.editor.sceneEl.camera = null;
+    aframeEditor.editor.signals.editorModeChanged.dispatch(false);
 
     this.toggleButton.innerHTML = 'Edit';
     this.endCurrentTool();
     this.showTools(false);
-    aframeEditor.editor.helpers.hide();
+    //aframeEditor.editor.helpers.hide();
   }
 };
 
