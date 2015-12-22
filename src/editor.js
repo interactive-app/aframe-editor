@@ -1,8 +1,8 @@
 /* global aframeEditor THREE */
 var Panels = require('./panels');
-var Signals = require('signals');
 var Viewport = require('./viewport');
 var Helpers = require('./helpers');
+var Events = require('./events.js');
 
 function Editor () {
   document.addEventListener('DOMContentLoaded', this.onDomLoaded.bind(this));
@@ -71,21 +71,8 @@ Editor.prototype = {
   },
 
   initEvents: function () {
-    this.signals = {
-
-      sceneGraphChanged: new Signals.Signal(),
-      objectSelected: new Signals.Signal(),
-      entitySelected: new Signals.Signal(),
-      objectChanged: new Signals.Signal(),
-      componentChanged: new Signals.Signal(),
-
-      // custom
-      editorModeChanged: new Signals.Signal(),
-
-      // threejs
-      windowResize: new Signals.Signal()
-    };
-
+    // Find better name :)
+    this.signals = Events;
     this.signals.editorModeChanged.add(function(active) {
       this.editorActive = active;
 
