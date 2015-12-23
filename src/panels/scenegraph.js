@@ -37,7 +37,7 @@ function SceneGraph (editor) {
     outliner.setValue(object !== null ? object.el : null);
   });
 
-  signals.sceneGraphChanged.add(this.refresh);
+  signals.sceneGraphChanged.add(this.refresh,this);
 
   container.add(outliner);
   var buttonRemove = new UI.Button('-').onClick(function () {
@@ -61,6 +61,10 @@ SceneGraph.prototype.refresh = function () {
   options.push({ static: true, value: this.scene, html: '<span class="type"></span> a-scene' });
 
   function treeIterate (element, depth) {
+
+    if (!element) 
+      return;
+
     if (depth === undefined) {
       depth = 1;
     } else {
@@ -96,7 +100,6 @@ SceneGraph.prototype.refresh = function () {
     }
   }
   treeIterate(this.scene);
-
   this.outliner.setOptions(options);
 };
 

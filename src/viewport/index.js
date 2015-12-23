@@ -13,12 +13,13 @@ function Viewport (editor, objects) {
   var scene = editor.scene;
   var sceneHelpers = editor.sceneHelpers;
 
-  //var objects = [];
+  var objects = [];
 
   var grid = new THREE.GridHelper(30, 1);
   sceneHelpers.add(grid);
 
   var camera = editor.camera;
+
   var selectionBox = new THREE.BoxHelper();
   selectionBox.material.depthTest = false;
   selectionBox.material.transparent = true;
@@ -34,14 +35,40 @@ function Viewport (editor, objects) {
 
     var object = transformControls.object;
     if (object !== undefined) {
-      selectionBox.update(object);
-      if (editor.helpers[ object.id ] !== undefined) {
-        editor.helpers[ object.id ].update();
+
+      var objectId = object.id;
+
+      // Hack because object3D always has geometry :(
+      if (object.geometry && object.geometry.vertices && object.geometry.vertices.length > 0)
+      {
+        selectionBox.update(object);
+      }
+      else if (object.children[0]) {
+
+        objectId = object.children[0].id;
       }
 
-      console.log(transformControls.getMode());
-      object.el.setAttribute('position',object.position.x.toFixed(2)+' '+object.position.y.toFixed(2)+' '+object.position.z.toFixed(2));
-      // !!!editor.signals.refreshSidebarObject3D.dispatch(object);
+      // Hacks
+      if (editor.helpers[ objectId ] !== undefined) {
+        editor.helpers[ objectId ].update();
+      }
+
+      switch (transformControls.getMode()) {
+        case 'translate':
+          object.el.setAttribute('position', {x: object.position.x.toFixed(2), y: object.position.y.toFixed(2), z: object.position.z.toFixed(2)});
+          break;
+        case 'rotate':
+          object.el.setAttribute('rotation', {
+            x: THREE.Math.radToDeg(object.rotation.x.toFixed(2)), 
+            y: THREE.Math.radToDeg(object.rotation.y.toFixed(2)), 
+            z: THREE.Math.radToDeg(object.rotation.z.toFixed(2))});
+          break;
+        case 'scale':
+          object.el.setAttribute('scale', {x: object.scale.x.toFixed(2), y: object.scale.y.toFixed(2), z: object.scale.z.toFixed(2)});
+          break;
+      }          
+
+      editor.signals.refreshSidebarObject3D.dispatch(object);
     }
   });
   transformControls.addEventListener('mouseDown', function () {
@@ -71,9 +98,6 @@ function Viewport (editor, objects) {
           break;
 
         case 'rotate':
-          function rad2deg(angle) {
-            return angle * 57.29577951308232; // angle / Math.PI * 180
-          }
           if (! objectRotationOnDown.equals(object.rotation)) {
             //object.el.setAttribute('rotation','x', object.rotation.x);
             //object.el.setAttribute('rotation','y', object.rotation.y);
@@ -86,9 +110,6 @@ function Viewport (editor, objects) {
 
         case 'scale':
           if (! objectScaleOnDown.equals(object.scale)) {
-            object.el.setAttribute('scale','x', object.scale.x);
-            object.el.setAttribute('scale','y', object.scale.y);
-            object.el.setAttribute('scale','z', object.scale.z);
           }
           break;
       }
@@ -97,10 +118,12 @@ function Viewport (editor, objects) {
   });
 
   sceneHelpers.add(transformControls);
-
+/*
   signals.objectSelected.add(function (object) {
     selectionBox.visible = false;
-    if (!editor.selected || editor.selected.el.helper) {
+    if (!editor.selected) {
+      
+    //if (!editor.selected || editor.selected.el.helper) {
       return;
     }
 
@@ -121,7 +144,7 @@ function Viewport (editor, objects) {
     }
     selectionBox.update(editor.selected);
   });
-
+*/
 //  transformControls.setMode('rotate');
   // controls need to be added *after* main logic,
   // otherwise controls.enabled doesn't work.
@@ -159,13 +182,11 @@ function Viewport (editor, objects) {
     if (onDownPosition.distanceTo(onUpPosition) === 0) {
 
       var intersects = getIntersects(onUpPosition, objects);
-
       if (intersects.length > 0) {
         var object = intersects[ 0 ].object;
         if (object.userData.object !== undefined) {
           // helper
-          // ????
-          //editor.selectEntity(object.userData.object);
+          editor.selectEntity(object.userData.object.el);
         } else {
           editor.selectEntity(object.el);
         }
@@ -267,13 +288,13 @@ function Viewport (editor, objects) {
     render();
 
   });
-
+*/
   signals.transformModeChanged.add(function (mode) {
 
     transformControls.setMode(mode);
 
   });
-
+/*
   signals.snapChanged.add(function (dist) {
 
     transformControls.setTranslationSnap(dist);
@@ -321,7 +342,7 @@ function Viewport (editor, objects) {
     render();
 
   });
-
+*/
   signals.objectSelected.add(function (object) {
 
     selectionBox.visible = false;
@@ -330,9 +351,16 @@ function Viewport (editor, objects) {
     if (object !== null) {
 
       if (object.geometry !== undefined &&
-         object instanceof THREE.Sprite === false) {
+         object instanceof THREE.Sprite === false &&
+         object.geometry.vertices && // hack
+         object.geometry.vertices.length > 0
+         ) {
 
-        selectionBox.update(object);
+        // Hack because object3D always has geometry :(
+        if (object.geometry && object.geometry.vertices && object.geometry.vertices.length > 0) {
+          selectionBox.update(object);
+        }
+
         selectionBox.visible = true;
 
       }
@@ -341,10 +369,8 @@ function Viewport (editor, objects) {
 
     }
 
-    render();
-
   });
-
+/*
   signals.objectFocused.add(function (object) {
 
     controls.focus(object);
@@ -362,40 +388,30 @@ function Viewport (editor, objects) {
     render();
 
   });
-
+*/
   signals.objectAdded.add(function (object) {
-
     object.traverse(function (child) {
-
       objects.push(child);
-
     });
-
   });
 
   signals.objectChanged.add(function (object) {
 
     if (editor.selected === object) {
-
-      selectionBox.update(object);
+      // Hack because object3D always has geometry :(
+      if (object.geometry && object.geometry.vertices && object.geometry.vertices.length > 0) {
+        selectionBox.update(object);
+      }
       transformControls.update();
-
     }
 
     if (object instanceof THREE.PerspectiveCamera) {
-
       object.updateProjectionMatrix();
-
     }
 
     if (editor.helpers[ object.id ] !== undefined) {
-
       editor.helpers[ object.id ].update();
-
     }
-
-    render();
-
   });
 
   signals.objectRemoved.add(function (object) {
@@ -409,17 +425,13 @@ function Viewport (editor, objects) {
   });
 
   signals.helperAdded.add(function (object) {
-
     objects.push(object.getObjectByName('picker'));
-
   });
 
   signals.helperRemoved.add(function (object) {
-
     objects.splice(objects.indexOf(object.getObjectByName('picker')), 1);
-
   });
-
+/*
   signals.materialChanged.add(function (material) {
 
     render();
@@ -478,6 +490,7 @@ function Viewport (editor, objects) {
 
     camera.aspect = container.dom.offsetWidth / container.dom.offsetHeight;
     camera.updateProjectionMatrix();
+
     //renderer.setSize(container.dom.offsetWidth, container.dom.offsetHeight);
     //render();
 
@@ -494,9 +507,9 @@ function Viewport (editor, objects) {
   signals.editorModeChanged.add(function (active) {
 
     if (active) {
-      aframeEditor.editor.sceneEl.camera = camera;
+      aframeEditor.editor.sceneEl.setActiveCamera(camera);
     } else {
-      aframeEditor.editor.sceneEl.camera = null;
+      aframeEditor.editor.sceneEl.setActiveCamera(aframeEditor.editor.defaultCameraEl);
     }
   });
 

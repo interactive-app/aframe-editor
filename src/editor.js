@@ -13,6 +13,7 @@ Editor.prototype = {
     this.tools = require('./tools');
     this.sceneEl = document.querySelector('a-scene');
     this.container = document.querySelector('.a-canvas');
+    this.defaultCameraEl = document.querySelector('[camera]');
 
     if (this.sceneEl.hasLoaded) {
       this.initUI();
@@ -28,38 +29,121 @@ Editor.prototype = {
     this.DEFAULT_CAMERA.position.set(20, 10, 20);
     this.DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
-    this.camera = this.DEFAULT_CAMERA;
+    this.camera = this.DEFAULT_CAMERA.clone();
 
     this.initEvents();
 
     this.selected = null;
     this.panels = new Panels(this);
     this.scene = this.sceneEl.object3D;
-    //this.helpers = new Helpers(this);
     this.helpers = {};
     this.sceneHelpers = new THREE.Scene();
     this.sceneHelpers.visible = false;
     this.scene.add(this.sceneHelpers);
     this.editorActive = false;
 
-    var objects = [];
-    function addObjects(object) {
+    var scope = this;
+    function addObjects (object) {
       if (object.children.length > 0) {
         for (var i = 0; i < object.children.length; i++) {
           var obj = object.children[i];
           if (obj instanceof THREE.Mesh) {
-            objects.push(obj);
+            scope.addObject(obj);
           }
-          addObjects(obj);
         }
       }
     }
+    this.viewport = new Viewport(this);
+    this.signals.windowResize.dispatch();
+    
     addObjects(this.sceneEl.object3D);
 
-    this.viewport = new Viewport(this, objects);
   },
 
-  selectEntity: function(entity) {
+  addObject: function (object) {
+    var scope = this;
+    object.traverse(function (child) {
+      scope.addHelper(child);
+    });
+
+    //this.scene.add(object);
+    this.signals.objectAdded.dispatch(object);
+    this.signals.sceneGraphChanged.dispatch();
+  },
+
+  removeObject: function (object) {
+
+    if (object.parent === null) return; // avoid deleting the camera or scene
+
+    var scope = this;
+
+    object.traverse(function (child) {
+
+      scope.removeHelper(child);
+
+    });
+
+    object.parent.remove(object);
+
+    this.signals.objectRemoved.dispatch(object);
+    this.signals.sceneGraphChanged.dispatch();
+
+  },
+
+  addHelper: function () {
+
+    var geometry = new THREE.SphereBufferGeometry(2, 4, 2);
+    var material = new THREE.MeshBasicMaterial({ color: 0xff0000, visible: false });
+
+    return function (object) {
+
+      var helper;
+
+      if (object instanceof THREE.Camera) {
+        helper = new THREE.CameraHelper(object, 1);
+      } else if (object instanceof THREE.PointLight) {
+        helper = new THREE.PointLightHelper(object, 1);
+      } else if (object instanceof THREE.DirectionalLight) {
+        helper = new THREE.DirectionalLightHelper(object, 1);
+      } else if (object instanceof THREE.SpotLight) {
+        helper = new THREE.SpotLightHelper(object, 1);
+      } else if (object instanceof THREE.HemisphereLight) {
+        helper = new THREE.HemisphereLightHelper(object, 1);
+      } else if (object instanceof THREE.SkinnedMesh) {
+        helper = new THREE.SkeletonHelper(object);
+      } else {
+        // no helper for this object type
+        return;
+      }
+
+      var picker = new THREE.Mesh(geometry, material);
+      picker.name = 'picker';
+      picker.userData.object = object;
+      helper.add(picker);
+
+      this.sceneHelpers.add(helper);
+      this.helpers[ object.id ] = helper;
+
+      this.signals.helperAdded.dispatch(helper);
+    };
+  }(),
+
+  removeHelper: function (object) {
+
+    if (this.helpers[ object.id ] !== undefined) {
+
+      var helper = this.helpers[ object.id ];
+      helper.parent.remove(helper);
+
+      delete this.helpers[ object.id ];
+
+      this.signals.helperRemoved.dispatch(helper);
+
+    }
+
+  },
+
+  selectEntity: function (entity) {
       this.selectedEntity = entity;
       if (entity) {
         this.select(entity.object3D);
@@ -80,7 +164,6 @@ Editor.prototype = {
     }.bind(this));
 
     window.addEventListener('resize', this.signals.windowResize.dispatch, false);
-    this.signals.windowResize.dispatch();
 
     var entities = document.querySelectorAll('a-entity');
     for (var i = 0; i < entities.length; ++i) {
@@ -102,6 +185,7 @@ Editor.prototype = {
     this.select(this.scene.getObjectById(id, true));
   },
 
+  // Change to select object
   select: function (object) {
     if (this.selected === object) {
       return;
@@ -109,7 +193,41 @@ Editor.prototype = {
 
     this.selected = object;
     this.signals.objectSelected.dispatch(object);
-  }
+  },
+
+  deselect: function () {
+
+    this.select(null);
+
+  },
+
+  clear: function () {
+/*
+    this.history.clear();
+    this.storage.clear();
+
+    this.camera.copy(this.DEFAULT_CAMERA);
+
+    var objects = this.scene.children;
+
+    while (objects.length > 0) {
+
+      this.removeObject(objects[ 0 ]);
+
+    }
+
+    this.geometries = {};
+    this.materials = {};
+    this.textures = {};
+    this.scripts = {};
+
+    this.deselect();
+
+    this.signals.editorCleared.dispatch();
+*/
+  },
+
+
 
 };
 
