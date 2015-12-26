@@ -1,5 +1,5 @@
 /* globals THREE */
-function MouseControls(editor) {
+function MouseControls (editor) {
   var objects = [];
 
   // object picking
@@ -54,6 +54,6 @@ function MouseControls(editor) {
   }
 
   editor.container.addEventListener('mousedown', onMouseDown, false);
-};
+}
 
 module.exports = MouseControls;

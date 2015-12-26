@@ -1,16 +1,22 @@
 /* global aframeEditor THREE */
 var Panels = require('./panels');
 var Viewport = require('./viewport');
-var Helpers = require('./helpers');
 var Events = require('./events.js');
 
 function Editor () {
-  document.addEventListener('DOMContentLoaded', this.onDomLoaded.bind(this));
+  // Detect if the scene is already loaded
+  if (document.readyState === 'complete' || document.readyState === 'loaded') {
+    this.onDomLoaded();
+  } else {
+    document.addEventListener('DOMContentLoaded', this.onDomLoaded.bind(this));
+  }
 }
 
 Editor.prototype = {
+  /**
+   * Callback once the DOM is completely loaded so we could query the scene
+   */
   onDomLoaded: function () {
-    this.tools = require('./tools');
     this.sceneEl = document.querySelector('a-scene');
     this.container = document.querySelector('.a-canvas');
     this.defaultCameraEl = document.querySelector('[camera]');
@@ -23,7 +29,6 @@ Editor.prototype = {
   },
 
   initUI: function () {
-
     this.DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 1, 10000);
     this.DEFAULT_CAMERA.name = 'Camera';
     this.DEFAULT_CAMERA.position.set(20, 10, 20);
@@ -55,48 +60,30 @@ Editor.prototype = {
     }
     this.viewport = new Viewport(this);
     this.signals.windowResize.dispatch();
-    
+
     addObjects(this.sceneEl.object3D);
-
-  },
-
-  addObject: function (object) {
-    var scope = this;
-    object.traverse(function (child) {
-      scope.addHelper(child);
-    });
-
-    //this.scene.add(object);
-    this.signals.objectAdded.dispatch(object);
-    this.signals.sceneGraphChanged.dispatch();
   },
 
   removeObject: function (object) {
-
     if (object.parent === null) return; // avoid deleting the camera or scene
 
     var scope = this;
 
     object.traverse(function (child) {
-
       scope.removeHelper(child);
-
     });
 
     object.parent.remove(object);
 
     this.signals.objectRemoved.dispatch(object);
     this.signals.sceneGraphChanged.dispatch();
-
   },
 
-  addHelper: function () {
-
+  addHelper: (function () {
     var geometry = new THREE.SphereBufferGeometry(2, 4, 2);
     var material = new THREE.MeshBasicMaterial({ color: 0xff0000, visible: false });
 
     return function (object) {
-
       var helper;
 
       if (object instanceof THREE.Camera) {
@@ -126,38 +113,34 @@ Editor.prototype = {
 
       this.signals.helperAdded.dispatch(helper);
     };
-  }(),
+  })(),
 
   removeHelper: function (object) {
-
     if (this.helpers[ object.id ] !== undefined) {
-
       var helper = this.helpers[ object.id ];
       helper.parent.remove(helper);
 
       delete this.helpers[ object.id ];
 
       this.signals.helperRemoved.dispatch(helper);
-
     }
-
   },
 
   selectEntity: function (entity) {
-      this.selectedEntity = entity;
-      if (entity) {
-        this.select(entity.object3D);
-      } else {
-        this.select(null);
-      }
+    this.selectedEntity = entity;
+    if (entity) {
+      this.select(entity.object3D);
+    } else {
+      this.select(null);
+    }
 
-      this.signals.entitySelected.dispatch(entity);
+    this.signals.entitySelected.dispatch(entity);
   },
 
   initEvents: function () {
     // Find better name :)
     this.signals = Events;
-    this.signals.editorModeChanged.add(function(active) {
+    this.signals.editorModeChanged.add(function (active) {
       this.editorActive = active;
 
       this.sceneHelpers.visible = this.editorActive;
@@ -196,39 +179,43 @@ Editor.prototype = {
   },
 
   deselect: function () {
-
     this.select(null);
-
   },
 
   clear: function () {
-/*
-    this.history.clear();
-    this.storage.clear();
-
     this.camera.copy(this.DEFAULT_CAMERA);
-
-    var objects = this.scene.children;
-
-    while (objects.length > 0) {
-
-      this.removeObject(objects[ 0 ]);
-
-    }
-
-    this.geometries = {};
-    this.materials = {};
-    this.textures = {};
-    this.scripts = {};
-
     this.deselect();
-
+    document.querySelector('a-scene').innerHTML = '';
     this.signals.editorCleared.dispatch();
-*/
   },
 
+  addEntity: function (entity) {
+    this.addObject(entity.object3D);
+    this.selectEntity(entity);
+  },
 
+  enable: function () {
+    this.panels.sidebar.show();
+    this.panels.menubar.show();
+    this.signals.editorModeChanged.dispatch(true);
+  },
 
+  disable: function () {
+    this.panels.sidebar.hide();
+    this.panels.menubar.hide();
+    this.signals.editorModeChanged.dispatch(false);
+  // @todo Removelisteners
+  },
+
+  addObject: function (object) {
+    var scope = this;
+    object.traverse(function (child) {
+      scope.addHelper(child);
+    });
+
+    this.signals.objectAdded.dispatch(object);
+    this.signals.sceneGraphChanged.dispatch();
+  }
 };
 
 module.exports = new Editor();

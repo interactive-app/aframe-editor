@@ -12,14 +12,11 @@ function SceneGraph (editor) {
   document.getElementsByTagName('head')[0].appendChild(link);
   // ------------
 
-  this.scene = document.querySelector('a-scene');
+  this.scene = editor.sceneEl;
 
   var signals = editor.signals;
-
   var container = new UI.Panel();
-
   var ignoreObjectSelectedSignal = false;
-
   var outliner = this.outliner = new UI.Outliner(editor);
 
   // handle entity selection change in panel
@@ -37,10 +34,10 @@ function SceneGraph (editor) {
     outliner.setValue(object !== null ? object.el : null);
   });
 
-  signals.sceneGraphChanged.add(this.refresh,this);
+  signals.sceneGraphChanged.add(this.refresh, this);
 
   container.add(outliner);
-  var buttonRemove = new UI.Button('-').onClick(function () {
+  var buttonRemove = new UI.Button('Delete').onClick(function () {
     if (editor.selectedEntity) {
       editor.selectedEntity.parentNode.removeChild(editor.selectedEntity);
       editor.signals.entitySelected.dispatch(null);
@@ -48,7 +45,6 @@ function SceneGraph (editor) {
     }
   }.bind(this));
   container.add(buttonRemove);
-
   container.add(new UI.Break());
 
   this.refresh();
@@ -61,9 +57,9 @@ SceneGraph.prototype.refresh = function () {
   options.push({ static: true, value: this.scene, html: '<span class="type"></span> a-scene' });
 
   function treeIterate (element, depth) {
-
-    if (!element) 
+    if (!element) {
       return;
+    }
 
     if (depth === undefined) {
       depth = 1;
@@ -81,7 +77,7 @@ SceneGraph.prototype.refresh = function () {
 
         var icons = {'camera': 'fa-video-camera', 'light': 'fa-lightbulb-o', 'geometry': 'fa-cube', 'material': 'fa-picture-o'};
         for (var icon in icons) {
-          if (child.components[icon]) {
+          if (child.components && child.components[icon]) {
             extra += ' <i class="fa ' + icons[icon] + '"></i>';
           }
         }
