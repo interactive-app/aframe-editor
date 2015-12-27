@@ -85,7 +85,6 @@ Editor.prototype = {
 
     return function (object) {
       var helper;
-
       if (object instanceof THREE.Camera) {
         helper = new THREE.CameraHelper(object, 1);
       } else if (object instanceof THREE.PointLight) {

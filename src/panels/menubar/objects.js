@@ -31,9 +31,12 @@ function MenuObjects (editor) {
       entity.setAttribute(attr, definition.components[attr]);
     }
 
-    editor.sceneEl.appendChild(entity);
+    // Ensure the components are loaded before update the UI
+    entity.addEventListener('loaded', function () {
+      editor.addEntity(entity);
+    });
 
-    editor.addEntity(entity);
+    editor.sceneEl.appendChild(entity);
 
     return entity;
   }
@@ -55,7 +58,9 @@ function MenuObjects (editor) {
     'Directional': {group: 'lights', element: 'a-entity', components: {light: 'type:directional'}},
     'Hemisphere': {group: 'lights', element: 'a-entity', components: {light: 'type:hemisphere'}},
     'Point': {group: 'lights', element: 'a-entity', components: {light: 'type:point'}},
-    'Spot': {group: 'lights', element: 'a-entity', components: {light: 'type:spot'}}
+    'Spot': {group: 'lights', element: 'a-entity', components: {light: 'type:spot'}},
+
+    'Camera': {group: 'cameras', element: 'a-entity', components: {camera: ''}}
   };
 
   var prevGroup = null;
