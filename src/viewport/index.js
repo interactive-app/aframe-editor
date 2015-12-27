@@ -122,10 +122,10 @@ function Viewport (editor) {
   });
 */
   signals.objectChanged.add(function () {
-    if (editor.selected.el.helper) {
-      return;
+    // Uberhack because of object3D mesh for lights
+    if (editor.selected.geometry && editor.selected.geometry.vertices && editor.selected.geometry.vertices.length > 0) {
+      selectionBox.update(editor.selected);
     }
-    selectionBox.update(editor.selected);
   });
 
   // object picking
@@ -297,7 +297,6 @@ function Viewport (editor) {
       objects.splice(objects.indexOf(child), 1);
     });
   });
-/*
   signals.helperAdded.add(function (object) {
     objects.push(object.getObjectByName('picker'));
   });
@@ -305,7 +304,6 @@ function Viewport (editor) {
   signals.helperRemoved.add(function (object) {
     objects.splice(objects.indexOf(object.getObjectByName('picker')), 1);
   });
-*/
   signals.windowResize.add(function () {
     camera.aspect = container.dom.offsetWidth / container.dom.offsetHeight;
     camera.updateProjectionMatrix();
