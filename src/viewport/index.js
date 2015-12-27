@@ -2,7 +2,7 @@
 var TransformControls = require('../../lib/vendor/threejs/TransformControls.js');
 var EditorControls = require('../../lib/vendor/threejs/EditorControls.js');
 
-function Viewport (editor, objects) {
+function Viewport (editor) {
   var signals = editor.signals;
 
   var container = {
@@ -11,6 +11,7 @@ function Viewport (editor, objects) {
 
   // helpers
   var sceneHelpers = editor.sceneHelpers;
+  var objects = [];
 
   var grid = new THREE.GridHelper(30, 1);
   sceneHelpers.add(grid);
@@ -266,13 +267,13 @@ function Viewport (editor, objects) {
       selectionBox.update(object);
     }
   });
-
+*/
   signals.objectAdded.add(function (object) {
     object.traverse(function (child) {
       objects.push(child);
     });
   });
-*/
+
   signals.objectChanged.add(function (object) {
     if (editor.selected === object) {
       // Hack because object3D always has geometry :(

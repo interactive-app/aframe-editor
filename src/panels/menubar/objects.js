@@ -1,7 +1,6 @@
 var UI = require('../../../lib/vendor/ui.js'); // @todo will be replaced with the npm package
 
 function MenuObjects (editor) {
-
   var container = new UI.Panel();
   container.setClass('menu');
 
@@ -14,17 +13,17 @@ function MenuObjects (editor) {
   options.setClass('options');
   container.add(options);
 
-  //--------------------------------------------
+  // --------------------------------------------
   // New
-  //--------------------------------------------
+  // --------------------------------------------
 
   /**
    * Helper function to add a new entity with a list of components
-   * @param  {object} definition Entity definition to add: 
+   * @param  {object} definition Entity definition to add:
    *                             {element: 'a-entity', components: {geometry: 'primitive:box'}}
    * @return {Element}            Entity created
    */
-  function createNewEntity(definition) {
+  function createNewEntity (definition) {
     var entity = document.createElement(definition.element);
 
     // load default attributes
@@ -61,7 +60,6 @@ function MenuObjects (editor) {
 
   var prevGroup = null;
   for (var definition in primitivesDefinitions) {
-
     // Add a line break if the group changes
     if (prevGroup === null) {
       prevGroup = primitivesDefinitions[definition].group;
@@ -83,6 +81,6 @@ function MenuObjects (editor) {
   }
 
   return container;
-};
+}
 
 module.exports = MenuObjects;
