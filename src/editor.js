@@ -18,14 +18,17 @@ Editor.prototype = {
    */
   onDomLoaded: function () {
     this.sceneEl = document.querySelector('a-scene');
+    if (this.sceneEl.hasLoaded) {
+      this.onSceneLoaded();
+    } else {
+      this.sceneEl.addEventListener('loaded', this.onSceneLoaded.bind(this));
+    }
+  },
+
+  onSceneLoaded: function () {
     this.container = document.querySelector('.a-canvas');
     this.defaultCameraEl = document.querySelector('[camera]');
-
-    if (this.sceneEl.hasLoaded) {
-      this.initUI();
-    } else {
-      this.sceneEl.addEventListener('loaded', this.initUI.bind(this));
-    }
+    this.initUI();
   },
 
   initUI: function () {
