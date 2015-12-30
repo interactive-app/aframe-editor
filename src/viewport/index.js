@@ -317,10 +317,10 @@ function Viewport (editor) {
   signals.editorModeChanged.add(function (active) {
     if (active) {
       aframeEditor.editor.sceneEl.setActiveCamera(camera);
-      document.querySelector('.a-enter-vr').style.display = 'none';
+      document.querySelector('.a-enter-vr,.rs-base').style.display = 'none';
     } else {
       aframeEditor.editor.defaultCameraEl.setAttribute('camera', 'active', 'true');
-      document.querySelector('.a-enter-vr').style.display = 'block';
+      document.querySelector('.a-enter-vr,.rs-base').style.display = 'block';
     }
   });
 }
