@@ -82,9 +82,21 @@ SceneGraph.prototype.refresh = function () {
           }
         }
 
-        var type = '<span class="type Mesh"></span>';
+        var typeClass = 'Entity';
+        switch (child.tagName.toLowerCase()) {
+          case 'a-animation':
+            typeClass = 'Animation';
+            break;
+          case 'a-entity':
+            typeClass = 'Entity';
+            break;
+          default:
+            typeClass = 'Template';
+        }
+
+        var type = '<span class="type ' + typeClass + '"></span>';
         var pad = '&nbsp;&nbsp;&nbsp;'.repeat(depth);
-        var label = child.id ? child.id : 'a-entity';
+        var label = child.id ? child.id : child.tagName.toLowerCase();
 
         options.push({
           static: true,
