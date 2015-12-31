@@ -4,7 +4,7 @@ var Viewport = require('./viewport');
 var Events = require('./events.js');
 
 function Editor () {
-  window.aframeCore = window.aframeCore || window.AFRAME;
+  window.aframeCore = window.aframeCore || window.AFRAME.aframeCore || window.AFRAME;
 
   // Detect if the scene is already loaded
   if (document.readyState === 'complete' || document.readyState === 'loaded') {
