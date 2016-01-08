@@ -6,7 +6,6 @@
     <meta name="description" content="Cube">
     <link rel="stylesheet" type="text/css" href="style/aframe-core.css">
     <link rel="stylesheet" type="text/css" href="style/main.css">
-    <!--<script src="../node_modules/@mozvr/aframe-core/build/aframe-core.js"></script>-->
     <script src="../node_modules/aframe/build/aframe.js"></script>
     <script src="../build/aframe-editor.js"></script>
     <style>
@@ -15,20 +14,25 @@
   </head>
   <body>
     <a-scene>
+      <a-assets>
+        <a-mixin id="spin" attribute="rotation" to="0 360 0"
+                  repeat="indefinite" easing="linear" dur="9600"></a-mixin>
+        </a-assets>
       <a-entity position="0 1 8">
         <a-entity camera look-controls wasd-controls></a-entity>
       </a-entity>
 
- <a-cube position="-5 0 -2" rotation="0 0 0" width="1" color="#F16745"></a-cube>
+      <a-cube position="-5 0 -2" rotation="0 0 0" width="1" color="#F16745"></a-cube>
       <a-cube position="0 0 0" rotation="0 0 0" height="2" color="#FFC65D"></a-cube>
       <a-entity id="yellowBox" geometry="primitive: box" material="color:#ff0" position="-2 2 -2"></a-entity>
-      <a-entity id="redBox" geometry="primitive: box" material="color:#f00" position="-4 1 0"></a-entity>
+      <a-entity id="redBox" geometry="primitive: box" material="color:#f00" position="-4 1 0">
+        <a-animation mixin="spin"></a-animation>
+      </a-entity>
       <a-entity id="blueBox" geometry="primitive: box" material="color:#00f" position="3 4 0"></a-entity>
       <a-entity id="greenBox" geometry="primitive: box" material="color:#0f0" position="4 2 4"></a-entity>
       <a-entity id="spotLight" light="type: point" position="0 3 3"></a-entity>
       <a-entity id="floor" geometry="primitive: cylinder; height: .2; radius: 12;"
                 material="color: #fafafa; metalness: .2; repeat: 50 20; roughness: .1"
                 position="0 0 0"></a-entity>
-
     </a-scene>  </body>
 </html>

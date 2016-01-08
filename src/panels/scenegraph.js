@@ -103,6 +103,10 @@ SceneGraph.prototype.refresh = function () {
           value: child,
           html: pad + type + label + extra
         });
+
+        if (child.tagName.toLowerCase() !== 'a-entity') {
+          continue;
+        }
       }
       treeIterate(child, depth);
     }
