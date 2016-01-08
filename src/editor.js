@@ -202,12 +202,14 @@ Editor.prototype = {
     this.panels.sidebar.show();
     this.panels.menubar.show();
     this.signals.editorModeChanged.dispatch(true);
+    this.sceneEl.pause();
   },
 
   disable: function () {
     this.panels.sidebar.hide();
     this.panels.menubar.hide();
     this.signals.editorModeChanged.dispatch(false);
+    this.sceneEl.play();
   // @todo Removelisteners
   },
 
