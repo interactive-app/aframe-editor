@@ -37,5 +37,5 @@ app
   }
 })
 .on('update', function (ev) {
-  execCmd('semistandard -v $(git ls-files "*.js") | snazzy');
+  execCmd('semistandard -v');
 });
