@@ -22,8 +22,8 @@
     "browserify": "^12.0.1",
     "browserify-css": "^0.8.1",
     "budo": "^6.0.4",
-    "semistandard": "^7.0.3",
-    "snazzy": "^2.0.1"
+    "mkdirp": "0.5.1",
+    "semistandard": "^7.0.3"
   },
   "dependencies": {
     "aframe": "^0.1.1",
@@ -34,8 +34,8 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "npm run build && node ./scripts/budo",
-    "build": "mkdir -p build/ && npm run browserify -- --debug -o build/aframe-editor.js",
-    "dist": "mkdir -p dist/ && npm run browserify -- --debug -o dist/aframe-editor.js",
+    "build": "mkdirp build/ && npm run browserify -- --debug -o build/aframe-editor.js",
+    "dist": "mkdirp dist/ && npm run browserify -- --debug -o dist/aframe-editor.js",
     "browserify": "browserify src/index.js -s 'aframe-editor'",
     "lint": "semistandard -v $(git ls-files '*.js') | snazzy",
     "precommit": "npm run lint"
