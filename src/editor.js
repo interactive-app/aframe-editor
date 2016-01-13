@@ -49,24 +49,22 @@ Editor.prototype = {
     this.helpers = {};
     this.sceneHelpers = new THREE.Scene();
     this.sceneHelpers.visible = false;
-    this.scene.add(this.sceneHelpers);
     this.editorActive = false;
 
-    var scope = this;
-    function addObjects (object) {
-      if (object.children.length > 0) {
-        for (var i = 0; i < object.children.length; i++) {
-          var obj = object.children[i];
-          if (obj instanceof THREE.Mesh) {
-            scope.addObject(obj);
-          }
-        }
-      }
-    }
     this.viewport = new Viewport(this);
     this.signals.windowResize.dispatch();
 
+    var scope = this;
+
+    function addObjects (object) {
+      for (var i = 0; i < object.children.length; i++) {
+        var obj = object.children[i];
+        scope.addObject(obj.children[0]);
+      }
+    }
     addObjects(this.sceneEl.object3D);
+
+    this.scene.add(this.sceneHelpers);
   },
 
   removeObject: function (object) {

@@ -71,8 +71,8 @@ SceneGraph.prototype.refresh = function () {
     for (var i = 0; i < children.length; i++) {
       var child = children[i];
 
-      // filter out all entities added by editor
-      if (!child.dataset.isEditor) {
+      // filter out all entities added by editor and the canvas added by aframe-core
+      if (!child.dataset.isEditor && child.tagName.toLowerCase() !== 'canvas') {
         var extra = '';
 
         var icons = {'camera': 'fa-video-camera', 'light': 'fa-lightbulb-o', 'geometry': 'fa-cube', 'material': 'fa-picture-o'};

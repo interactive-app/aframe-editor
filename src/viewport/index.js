@@ -2,6 +2,10 @@
 var TransformControls = require('../../lib/vendor/threejs/TransformControls.js');
 var EditorControls = require('../../lib/vendor/threejs/EditorControls.js');
 
+function getNumber(value) {
+  return parseFloat(value.toFixed(2));
+}
+
 function Viewport (editor) {
   var signals = editor.signals;
 
@@ -34,30 +38,24 @@ function Viewport (editor) {
     if (object !== undefined) {
       var objectId = object.id;
 
-      // Hack because object3D always has geometry :(
-      if (object.geometry && object.geometry.vertices && object.geometry.vertices.length > 0) {
-        selectionBox.update(object);
-      } else if (object.children[0]) {
-        objectId = object.children[0].id;
-      }
+      selectionBox.update(object);
 
-      // Hacks
       if (editor.helpers[ objectId ] !== undefined) {
         editor.helpers[ objectId ].update();
       }
 
       switch (transformControls.getMode()) {
         case 'translate':
-          object.el.setAttribute('position', {x: object.position.x.toFixed(2), y: object.position.y.toFixed(2), z: object.position.z.toFixed(2)});
+          object.el.setAttribute('position', {x: getNumber(object.position.x), y: getNumber(object.position.y), z: getNumber(object.position.z)});
           break;
         case 'rotate':
           object.el.setAttribute('rotation', {
-            x: THREE.Math.radToDeg(object.rotation.x.toFixed(2)),
-            y: THREE.Math.radToDeg(object.rotation.y.toFixed(2)),
-            z: THREE.Math.radToDeg(object.rotation.z.toFixed(2))});
+            x: THREE.Math.radToDeg(getNumber(object.rotation.x)),
+            y: THREE.Math.radToDeg(getNumber(object.rotation.y)),
+            z: THREE.Math.radToDeg(getNumber(object.rotation.z))});
           break;
         case 'scale':
-          object.el.setAttribute('scale', {x: object.scale.x.toFixed(2), y: object.scale.y.toFixed(2), z: object.scale.z.toFixed(2)});
+          object.el.setAttribute('scale', {x: getNumber(object.scale.x), y: getNumber(object.scale.y), z: getNumber(object.scale.z)});
           break;
       }
       editor.signals.refreshSidebarObject3D.dispatch(object);
@@ -243,17 +241,10 @@ function Viewport (editor) {
     selectionBox.visible = false;
     transformControls.detach();
     if (object !== null) {
-      if (object.geometry !== undefined &&
-         object instanceof THREE.Sprite === false &&
-         object.geometry.vertices && // hack
-         object.geometry.vertices.length > 0
-         ) {
-        // Hack because object3D always has geometry :(
-        if (object.geometry && object.geometry.vertices && object.geometry.vertices.length > 0) {
-          selectionBox.update(object);
-        }
-        selectionBox.visible = true;
-      }
+
+      selectionBox.update(object);
+      selectionBox.visible = true;
+
       transformControls.attach(object);
     }
   });
