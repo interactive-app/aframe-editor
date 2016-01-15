@@ -91,12 +91,18 @@ function Attributes (editor) {
       }
     }
 
+    for (name in editor.componentsStore.components) {
+      componentsOptions[name] = name;
+    }
+
     componentsList = new UI.Select().setId('componentlist').setOptions(componentsOptions).setWidth('150px');
     componentsRow.add(new UI.Text('Add').setWidth('90px'));
     componentsRow.add(componentsList);
     var button = new UI.Button('+').onClick(function () {
-      // Add the selected component from the combobox to the current active entity
-      addComponentToEntity(editor.selected.el, componentsList.getValue());
+      editor.componentsStore.addComponentToScene(componentsList.getValue(), function(){
+        // Add the selected component from the combobox to the current active entity
+        addComponentToEntity(editor.selected.el, componentsList.getValue());
+      });
     });
     componentsRow.add(button.setWidth('20px'));
     return componentsRow;

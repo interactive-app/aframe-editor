@@ -164,6 +164,9 @@ function Viewport (editor) {
   }
 
   function onMouseDown (event) {
+    if (event instanceof CustomEvent)
+      return;
+
     event.preventDefault();
 
     var array = getMousePosition(editor.container, event.clientX, event.clientY);
@@ -173,6 +176,9 @@ function Viewport (editor) {
   }
 
   function onMouseUp (event) {
+    if (event instanceof CustomEvent)
+      return;
+
     var array = getMousePosition(editor.container, event.clientX, event.clientY);
     onUpPosition.fromArray(array);
     handleClick();

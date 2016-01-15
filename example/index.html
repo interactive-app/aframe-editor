@@ -19,7 +19,10 @@
                   repeat="indefinite" easing="linear" dur="9600"></a-mixin>
         </a-assets>
       <a-entity position="0 1 8">
-        <a-entity camera look-controls wasd-controls></a-entity>
+        <a-entity camera look-controls wasd-controls>
+          <a-entity visible="true" position="0 0 -2" geometry="primitive: ring; radiusOuter: 0.016; radiusInner: 0.01" material="color: #ff9; shader: flat; transparent: true; opacity: 0.5" scale="2 2 2" cursor="maxDistance: 100;" raycaster="">
+              </a-entity>
+        </a-entity>
       </a-entity>
 
       <!--<a-cube position="-5 0 -2" rotation="0 0 0" width="1" color="#F16745"></a-cube>

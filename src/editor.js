@@ -2,6 +2,7 @@
 var Panels = require('./panels');
 var Viewport = require('./viewport');
 var Events = require('./events.js');
+var ComponentsStore = require('./componentsstore.js');
 
 function Editor () {
   window.aframeCore = window.aframeCore || window.AFRAME.aframeCore || window.AFRAME;
@@ -19,6 +20,9 @@ Editor.prototype = {
    * Callback once the DOM is completely loaded so we could query the scene
    */
   onDomLoaded: function () {
+
+    this.componentsStore = new ComponentsStore();
+
     this.sceneEl = document.querySelector('a-scene');
     if (this.sceneEl.hasLoaded) {
       this.onSceneLoaded();
