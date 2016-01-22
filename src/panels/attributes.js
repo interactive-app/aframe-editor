@@ -326,6 +326,13 @@ function Attributes (editor) {
   });
   editor.signals.componentChanged.add(function (evt) {
     var entity = evt.detail.target;
+
+    //console.log(AFRAME.utils.diff(evt.detail.newData,evt.detail.oldData));
+    if (evt.detail.newData.shader && evt.detail.newData.shader !== evt.detail.oldData.shader) {
+      generateComponentsPanels(editor.selected.el);
+      ignoreComponentsChange = false;
+    }
+
     updateUI(entity);
     editor.signals.objectChanged.dispatch(entity.object3D);
   });
