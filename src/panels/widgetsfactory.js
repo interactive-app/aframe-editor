@@ -3,6 +3,7 @@ var UI = require('../../lib/vendor/ui.js'); // @todo will be replaced with the n
 
 module.exports = {
   widgets: {},
+  knownWidgetsType: ['select', 'boolean', 'number', 'int', 'string', 'color', 'vec3'],
 
   /**
    * [updateWidgetValue description]
@@ -28,7 +29,7 @@ module.exports = {
     var defaultValue = propertySchema.default;
     if (propertySchema.oneOf) {
       return 'select';
-    } else if ( propertySchema.type ) {
+    } else if (propertySchema.type && this.knownWidgetsType.indexOf(propertySchema.type)!== -1) {
       return propertySchema.type;
     } else {
       switch (typeof defaultValue) {
