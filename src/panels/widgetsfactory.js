@@ -28,16 +28,18 @@ module.exports = {
     var defaultValue = propertySchema.default;
     if (propertySchema.oneOf) {
       return 'select';
+    } else if ( propertySchema.type ) {
+      return propertySchema.type;
     } else {
       switch (typeof defaultValue) {
         case 'boolean':
-          return 'checkbox';
+          return 'boolean';
         case 'number':
           return 'number';
         case 'object':
-          return 'vector3';
+          return 'vec3';
         case 'string':
-          return (defaultValue.indexOf('#') === -1) ? 'input' : 'color';
+          return (defaultValue.indexOf('#') === -1) ? 'string' : 'color';
         default:
           console.warn('Unknown attribute', propertySchema);
           return null;
@@ -74,19 +76,22 @@ module.exports = {
         }
         widget = new UI.Select().setOptions(options);
         break;
-      case 'checkbox':
+      case 'boolean':
         widget = new UI.Checkbox().setWidth('50px');
         break;
       case 'number':
         widget = new UI.Number().setWidth('50px');
         break;
-      case 'input':
+      case 'int':
+        widget = new UI.Number().setWidth('50px').setPrecision(0);
+        break;
+      case 'string':
         widget = new UI.Input('').setWidth('50px');
         break;
       case 'color':
         widget = new UI.Color().setWidth('50px');
         break;
-      case 'vector3':
+      case 'vec3':
         widget = new UI.Vector3().setWidth('150px');
         break;
       default:
