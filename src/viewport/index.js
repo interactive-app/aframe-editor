@@ -120,8 +120,7 @@ function Viewport (editor) {
   });
 */
   signals.objectChanged.add(function () {
-    // Uberhack because of object3D mesh for lights
-    if (editor.selected.geometry && editor.selected.geometry.vertices && editor.selected.geometry.vertices.length > 0) {
+    if (aframeEditor.editor.selectedEntity.object3DMap['mesh']) {
       selectionBox.update(editor.selected);
     }
   });
