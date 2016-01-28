@@ -1,10 +1,9 @@
-// TODO: Change the name of this class
-function ComponentsStore() {
+function ComponentLoader() {
   this.components = null;
   this.loadComponentsData();
 }
 
-ComponentsStore.prototype = {
+ComponentLoader.prototype = {
   loadComponentsData: function() {
     var xhr = new window.XMLHttpRequest();
     // @todo Remove the sync call and use a callback
@@ -44,4 +43,4 @@ ComponentsStore.prototype = {
   }
 };
 
-module.exports = ComponentsStore;
+module.exports = ComponentLoader;

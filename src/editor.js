@@ -2,7 +2,8 @@
 var Panels = require('./panels');
 var Viewport = require('./viewport');
 var Events = require('./events.js');
-var ComponentsStore = require('./componentsstore.js');
+var ComponentLoader = require('./componentloader.js');
+var ShaderLoader = require('./shaderloader.js');
 
 function Editor () {
   window.aframeCore = window.aframeCore || window.AFRAME.aframeCore || window.AFRAME;
@@ -21,7 +22,8 @@ Editor.prototype = {
    */
   onDomLoaded: function () {
 
-    this.componentsStore = new ComponentsStore();
+    this.componentLoader = new ComponentLoader();
+    this.shaderLoader = new ShaderLoader();
 
     this.sceneEl = document.querySelector('a-scene');
     if (this.sceneEl.hasLoaded) {
@@ -42,8 +44,7 @@ Editor.prototype = {
     this.DEFAULT_CAMERA.name = 'Camera';
     this.DEFAULT_CAMERA.position.set(20, 10, 20);
     this.DEFAULT_CAMERA.lookAt(new THREE.Vector3());
-
-    this.camera = this.DEFAULT_CAMERA.clone();
+    this.camera = this.DEFAULT_CAMERA;
 
     this.initEvents();
 

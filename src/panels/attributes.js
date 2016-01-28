@@ -2,9 +2,15 @@
 var UI = require('../../lib/vendor/ui.js'); // @todo will be replaced with the npm package
 var WidgetsFactory = require('./widgetsfactory.js'); // @todo will be replaced with the npm package
 
+function trim(s) { 
+   s = s.replace(/(^\s*)|(\s*$)/gi,"");
+   s = s.replace(/[ ]{2,}/gi," "); 
+   s = s.replace(/\n /,"\n"); return s;
+}
+
 function Attributes (editor) {
   var objectId, objectType, objectCustomRow;
-  var componentsList;
+  var componentsList, mixinsContainer;
   var ignoreComponentsChange = false;
   var commonComponents = ['position', 'rotation', 'scale', 'visible'];
 
@@ -21,6 +27,39 @@ function Attributes (editor) {
     } else {
       entity.setAttribute(componentName, value);
     }
+  }
+
+  function generateMixinsPanel () {
+    var container = new UI.CollapsiblePanel();
+
+    container.addStatic(new UI.Text('Mixins').setTextTransform('uppercase'));
+    container.add(new UI.Break());
+
+    mixinsContainer = new UI.Row();
+    container.add(mixinsContainer);
+
+    var mixins = document.querySelectorAll('a-mixin');
+    var mixinsOptions = {};
+
+    for (var i = 0; i < mixins.length; i++) {
+      mixinsOptions[ mixins[i].id ] = mixins[i].id;
+    }
+
+    var mixinsList = new UI.Select().setId('componentlist').setOptions(mixinsOptions).setWidth('150px');
+    container.add(new UI.Text('Add').setWidth('90px'));
+    container.add(mixinsList);
+    var button = new UI.Button('+').onClick(function () {
+      editor.selected.el.setAttribute('mixin', trim(editor.selected.el.getAttribute('mixin') + ' ' + mixinsList.getValue()));
+    });
+    container.add(button.setWidth('20px'));
+
+    var newMixin = new UI.Button('New');
+    newMixin.onClick(function () {
+      alert('This button should create a mixin based on the current entity components values');
+    });
+    container.add(newMixin);
+
+    return container;
   }
 
   /**
@@ -83,7 +122,15 @@ function Attributes (editor) {
    * the current entity
    */
   function generateAddComponentRow () {
+
+    var container = new UI.CollapsiblePanel();
+
+    container.addStatic(new UI.Text('COMPONENTS'));
+    container.add(new UI.Break());
+
     var componentsRow = new UI.Row();
+    container.add(componentsRow);
+
     var componentsOptions = {};
     for (var name in aframeCore.components) {
       if (commonComponents.indexOf(name) === -1) {
@@ -91,11 +138,12 @@ function Attributes (editor) {
       }
     }
 
-    for (name in editor.componentsStore.components) {
+    for (name in editor.componentLoader.components) {
       componentsOptions[name] = name;
     }
 
     componentsList = new UI.Select().setId('componentlist').setOptions(componentsOptions).setWidth('150px');
+
     componentsRow.add(new UI.Text('Add').setWidth('90px'));
     componentsRow.add(componentsList);
     var button = new UI.Button('+').onClick(function () {
@@ -105,7 +153,7 @@ function Attributes (editor) {
       });
     });
     componentsRow.add(button.setWidth('20px'));
-    return componentsRow;
+    return container;
   }
 
   /**
@@ -154,6 +202,28 @@ function Attributes (editor) {
       }
     });
 
+    // Update mixins list
+    mixinsContainer.dom.innerHTML = '';
+    entity.mixinEls.forEach(function (mixin) {
+      var name = new UI.Text(mixin.id).setWidth('160px').setFontSize('12px');
+      mixinsContainer.add(name);
+
+      var edit = new UI.Button('Edit').setDisabled(true);
+      edit.setMarginLeft('4px');
+      edit.onClick(function () {
+      //  signals.editScript.dispatch( object, script );
+      });
+      mixinsContainer.add(edit);
+
+      var remove = new UI.Button('Remove');
+      remove.setMarginLeft('4px');
+      remove.onClick(function () {
+        entity.setAttribute('mixin', trim(entity.getAttribute('mixin').replace(mixin.id, '')));
+      });
+      mixinsContainer.add(remove);
+
+      mixinsContainer.add(new UI.Break());
+    });
     WidgetsFactory.updateWidgetVisibility(entity);
   }
 
@@ -286,7 +356,6 @@ function Attributes (editor) {
   function updateEntityValue (event, componentName, attributeName, property) {
     ignoreComponentsChange = true;
     var entity = editor.selected.el;
-
     var id = attributeName ? componentName + '.' + attributeName + '.' + property : property ? (componentName + '.' + property) : componentName;
     var widget = WidgetsFactory.widgets[id];
 
@@ -306,6 +375,9 @@ function Attributes (editor) {
 
   // Add common attributes panel (type, id, position, rotation, scale, visible)
   container.add(generateCommonComponentsPanel());
+
+  // Add common attributes panel (type, id, position, rotation, scale, visible)
+  container.add(generateMixinsPanel());
 
   // Append the components list that the user can add to the selected entity
   container.add(generateAddComponentRow());
@@ -327,10 +399,15 @@ function Attributes (editor) {
   editor.signals.componentChanged.add(function (evt) {
     var entity = evt.detail.target;
 
-    //console.log(AFRAME.utils.diff(evt.detail.newData,evt.detail.oldData));
     if (evt.detail.newData.shader && evt.detail.newData.shader !== evt.detail.oldData.shader) {
-      generateComponentsPanels(editor.selected.el);
-      ignoreComponentsChange = false;
+      aframeEditor.editor.shaderLoader.addShaderToScene(evt.detail.newData.shader, function() {
+        entity.components.material.update(evt.detail.oldData);
+        generateComponentsPanels(editor.selected.el);
+        ignoreComponentsChange = false;
+        updateUI(entity);
+        editor.signals.objectChanged.dispatch(entity.object3D);
+      });
+      return;
     }
 
     updateUI(entity);

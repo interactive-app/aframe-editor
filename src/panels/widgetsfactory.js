@@ -75,6 +75,14 @@ module.exports = {
         for (var key in propertySchema.oneOf) {
           options[propertySchema.oneOf[key]] = propertySchema.oneOf[key];
         }
+
+        if (componentName === 'material' && property === 'shader') {
+          // @fixme Better access to shaders
+          for (var shader in aframeEditor.editor.shaderLoader.shaders) {
+            options[shader] = shader;
+          }
+        }
+
         widget = new UI.Select().setOptions(options);
         break;
       case 'boolean':
