@@ -72,7 +72,8 @@ SceneGraph.prototype.refresh = function () {
       var child = children[i];
 
       // filter out all entities added by editor and the canvas added by aframe-core
-      if (!child.dataset.isEditor && child.tagName.toLowerCase() !== 'canvas') {
+      var ignoredTags = ['canvas', 'a-assets'];
+      if (!child.dataset.isEditor && ignoredTags.indexOf(child.tagName.toLowerCase()) === -1) {
         var extra = '';
 
         var icons = {'camera': 'fa-video-camera', 'light': 'fa-lightbulb-o', 'geometry': 'fa-cube', 'material': 'fa-picture-o'};
@@ -107,8 +108,8 @@ SceneGraph.prototype.refresh = function () {
         if (child.tagName.toLowerCase() !== 'a-entity') {
           continue;
         }
+        treeIterate(child, depth);
       }
-      treeIterate(child, depth);
     }
   }
   treeIterate(this.scene);
