@@ -40,7 +40,7 @@ function SceneGraph (editor) {
   var buttonRemove = new UI.Button('Delete').onClick(function () {
     if (editor.selectedEntity) {
       editor.selectedEntity.parentNode.removeChild(editor.selectedEntity);
-      editor.signals.entitySelected.dispatch(null);
+      editor.selectEntity(null);
       this.refresh();
     }
   }.bind(this));

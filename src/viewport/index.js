@@ -1,8 +1,8 @@
-/* global aframeEditor THREE */
+/* global aframeEditor THREE CustomEvent */
 var TransformControls = require('../../lib/vendor/threejs/TransformControls.js');
 var EditorControls = require('../../lib/vendor/threejs/EditorControls.js');
 
-function getNumber(value) {
+function getNumber (value) {
   return parseFloat(value.toFixed(2));
 }
 
@@ -165,8 +165,9 @@ function Viewport (editor) {
   }
 
   function onMouseDown (event) {
-    if (event instanceof CustomEvent)
+    if (event instanceof CustomEvent) {
       return;
+    }
 
     event.preventDefault();
 
@@ -177,8 +178,9 @@ function Viewport (editor) {
   }
 
   function onMouseUp (event) {
-    if (event instanceof CustomEvent)
+    if (event instanceof CustomEvent) {
       return;
+    }
 
     var array = getMousePosition(editor.container, event.clientX, event.clientY);
     onUpPosition.fromArray(array);
@@ -248,7 +250,6 @@ function Viewport (editor) {
     selectionBox.visible = false;
     transformControls.detach();
     if (object !== null) {
-
       selectionBox.update(object);
       selectionBox.visible = true;
 

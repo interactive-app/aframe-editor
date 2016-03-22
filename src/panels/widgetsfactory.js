@@ -1,4 +1,4 @@
-/* global aframeCore */
+/* global aframeCore aframeEditor */
 var UI = require('../../lib/vendor/ui.js'); // @todo will be replaced with the npm package
 
 module.exports = {
@@ -27,11 +27,13 @@ module.exports = {
    */
   getPropertyType: function (propertySchema) {
     var defaultValue = propertySchema.default;
+    console.log(propertySchema, typeof defaultValue, propertySchema.type, this.knownWidgetsType.indexOf(propertySchema.type));
     if (propertySchema.oneOf) {
       return 'select';
-    } else if (propertySchema.type && this.knownWidgetsType.indexOf(propertySchema.type)!== -1) {
+    } else if (propertySchema.type && this.knownWidgetsType.indexOf(propertySchema.type) !== -1) {
       return propertySchema.type;
     } else {
+      console.log(propertySchema, typeof defaultValue);
       switch (typeof defaultValue) {
         case 'boolean':
           return 'boolean';

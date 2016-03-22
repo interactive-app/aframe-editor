@@ -21,7 +21,6 @@ Editor.prototype = {
    * Callback once the DOM is completely loaded so we could query the scene
    */
   onDomLoaded: function () {
-
     this.componentLoader = new ComponentLoader();
     this.shaderLoader = new ShaderLoader();
 
