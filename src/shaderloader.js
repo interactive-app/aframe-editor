@@ -5,7 +5,7 @@ function ShaderLoader () {
 }
 
 ShaderLoader.prototype = {
-  loadShadersData: function() {
+  loadShadersData: function () {
     var xhr = new window.XMLHttpRequest();
     // @todo Remove the sync call and use a callback
     xhr.open('GET', 'https://raw.githubusercontent.com/aframevr/aframe-shaders/master/shaders.json', false);
@@ -18,10 +18,10 @@ ShaderLoader.prototype = {
     };
     xhr.send();
   },
-  addShaderToScene: function(shaderName, onLoaded) {
+  addShaderToScene: function (shaderName, onLoaded) {
     var shader = this.shaders[shaderName];
     if (shader && !shader.included) {
-      console.log('Shader', shaderName,'loaded!');
+      console.log('Shader', shaderName, 'loaded!');
       var script = document.createElement('script');
       script.src = shader.url;
       script.setAttribute('data-shader-name', shaderName);

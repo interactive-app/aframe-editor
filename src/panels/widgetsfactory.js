@@ -1,4 +1,4 @@
-/* global aframeCore */
+/* global aframeCore aframeEditor */
 var UI = require('../../lib/vendor/ui.js'); // @todo will be replaced with the npm package
 
 module.exports = {

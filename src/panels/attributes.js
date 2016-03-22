@@ -1,11 +1,12 @@
-/* global aframeCore */
+/* global aframeCore aframeEditor */
 var UI = require('../../lib/vendor/ui.js'); // @todo will be replaced with the npm package
 var WidgetsFactory = require('./widgetsfactory.js'); // @todo will be replaced with the npm package
 
-function trim(s) { 
-   s = s.replace(/(^\s*)|(\s*$)/gi,"");
-   s = s.replace(/[ ]{2,}/gi," "); 
-   s = s.replace(/\n /,"\n"); return s;
+function trim (s) {
+  s = s.replace(/(^\s*)|(\s*$)/gi, '');
+  s = s.replace(/[ ]{2,}/gi, ' ');
+  s = s.replace(/\n /, '\n');
+  return s;
 }
 
 function Attributes (editor) {
@@ -55,7 +56,7 @@ function Attributes (editor) {
 
     var newMixin = new UI.Button('New');
     newMixin.onClick(function () {
-      alert('This button should create a mixin based on the current entity components values');
+      window.alert('This button should create a mixin based on the current entity components values');
     });
     container.add(newMixin);
 
@@ -122,7 +123,6 @@ function Attributes (editor) {
    * the current entity
    */
   function generateAddComponentRow () {
-
     var container = new UI.CollapsiblePanel();
 
     container.addStatic(new UI.Text('COMPONENTS'));
@@ -147,7 +147,7 @@ function Attributes (editor) {
     componentsRow.add(new UI.Text('Add').setWidth('90px'));
     componentsRow.add(componentsList);
     var button = new UI.Button('+').onClick(function () {
-      editor.componentLoader.addComponentToScene(componentsList.getValue(), function(){
+      editor.componentLoader.addComponentToScene(componentsList.getValue(), function () {
         // Add the selected component from the combobox to the current active entity
         addComponentToEntity(editor.selected.el, componentsList.getValue());
       });
@@ -400,7 +400,7 @@ function Attributes (editor) {
     var entity = evt.detail.target;
 
     if (evt.detail.newData.shader && evt.detail.newData.shader !== evt.detail.oldData.shader) {
-      aframeEditor.editor.shaderLoader.addShaderToScene(evt.detail.newData.shader, function() {
+      aframeEditor.editor.shaderLoader.addShaderToScene(evt.detail.newData.shader, function () {
         entity.components.material.update(evt.detail.oldData);
         generateComponentsPanels(editor.selected.el);
         ignoreComponentsChange = false;
