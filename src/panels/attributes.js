@@ -147,7 +147,7 @@ function Attributes (editor) {
     componentsRow.add(new UI.Text('Add').setWidth('90px'));
     componentsRow.add(componentsList);
     var button = new UI.Button('+').onClick(function () {
-      editor.componentsStore.addComponentToScene(componentsList.getValue(), function(){
+      editor.componentLoader.addComponentToScene(componentsList.getValue(), function(){
         // Add the selected component from the combobox to the current active entity
         addComponentToEntity(editor.selected.el, componentsList.getValue());
       });

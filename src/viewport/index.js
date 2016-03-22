@@ -20,6 +20,8 @@ function Viewport (editor) {
   var grid = new THREE.GridHelper(30, 1);
   sceneHelpers.add(grid);
 
+  var cameraEl = document.createElement('a-entity');
+  cameraEl.setAttribute('camera', 'active: false');
   var camera = editor.camera;
 
   var selectionBox = new THREE.BoxHelper();
@@ -312,7 +314,7 @@ function Viewport (editor) {
 
   signals.editorModeChanged.add(function (active) {
     if (active) {
-      aframeEditor.editor.sceneEl.setActiveCamera(camera);
+      aframeEditor.editor.sceneEl.systems.camera.setActiveCamera(cameraEl, camera);
       document.querySelector('.a-enter-vr,.rs-base').style.display = 'none';
     } else {
       aframeEditor.editor.defaultCameraEl.setAttribute('camera', 'active', 'true');
