@@ -189,12 +189,16 @@ function Attributes (editor) {
       }
     }
 
+    // Set the widget values for each components' attributes
     var entityComponents = Array.prototype.slice.call(entity.attributes);
     entityComponents.forEach(function (component) {
       var properties = entity.getAttribute(component.name);
-      if (typeof properties !== 'object') {
+
+      // The attributeIf the properties refer to a single value or multivalue like position {x:0, y:0, z:0}
+      if (WidgetsFactory.widgets[component.name] || typeof properties !== 'object') {
         WidgetsFactory.updateWidgetValue(component.name, properties);
       } else {
+        // Some components has multiple attributes like geometry {primitive: box}
         for (var property in properties) {
           var id = component.name + '.' + property;
           WidgetsFactory.updateWidgetValue(id, properties[property]);
@@ -251,33 +255,10 @@ function Attributes (editor) {
     var label = new UI.Text(panelName);
     propertyRow.add(label);
 
-    // If there's no propertyName it's considered a compound attribute.
-    // eg: Position, Rotation & Scale are considered a compound attribute of type 'vector3'
-    //    schema: {
-    //        x: { default: 0 },
-    //        y: { default: 0 },
-    //        z: { default: 0 }
-    //    }
-    //
-    // We should check also if the schema has a 'default' key in that case we're dealing
-    // with a single property components like 'visible':
-    //    schema: { default: true },
-    if (!propertyName && !propertySchema.hasOwnProperty('default')) {
-      // It's a compoundComponent like Position, Rotation or Scale
-      label.setWidth('90px');
-      var propertyWidgetSize = 150 / Object.keys(propertySchema).length;
-      for (propertyName in propertySchema) {
-        var propertyWidget = WidgetsFactory.getWidgetFromProperty(componentName, null, propertyName, updateEntityValue, propertySchema[propertyName]);
-        propertyWidget.setWidth(propertyWidgetSize + 'px');
-        propertyWidget.propertyRow = propertyRow;
-        propertyRow.add(propertyWidget);
-      }
-    } else {
-      label.setWidth('120px');
-      var newWidget = WidgetsFactory.getWidgetFromProperty(componentName, null, propertyName, updateEntityValue, propertySchema);
-      newWidget.propertyRow = propertyRow;
-      propertyRow.add(newWidget);
-    }
+    label.setWidth('120px');
+    var newWidget = WidgetsFactory.getWidgetFromProperty(componentName, null, propertyName, updateEntityValue, propertySchema);
+    newWidget.propertyRow = propertyRow;
+    propertyRow.add(newWidget);
 
     return propertyRow;
   }
