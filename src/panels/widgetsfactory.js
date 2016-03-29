@@ -67,6 +67,7 @@ module.exports = {
     }
 
     var type = this.getPropertyType(propertySchema);
+    var onChange = null;
 
     switch (type) {
       case 'select':
@@ -80,6 +81,13 @@ module.exports = {
           // @fixme Better access to shaders
           for (var shader in aframeEditor.editor.shaderLoader.shaders) {
             options[shader] = shader;
+          }
+
+          onChange = function (event) {
+            aframeEditor.editor.shaderLoader.addShaderToScene(event.target.options[event.target.selectedIndex].value, function () {
+              onUpdateEntityValue(event, componentName, propertyName, property);
+              aframeEditor.editor.signals.generateComponentsPanels.dispatch();
+            });
           }
         }
 
@@ -114,9 +122,14 @@ module.exports = {
       widget.max = propertySchema.max;
     }
     widget.schema = propertySchema;
-    widget.onChange(function (event) {
-      onUpdateEntityValue(event, componentName, propertyName, property);
-    });
+
+    if (onChange) {
+      widget.onChange(onChange);
+    } else {
+      widget.onChange(function (event) {
+        onUpdateEntityValue(event, componentName, propertyName, property);
+      });
+    }
 
     // Generate an unique ID for this attribute (e.g: geometry.primitive)
     // and save it on the widgets variable so we could easily access to it in the following functions
