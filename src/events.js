@@ -1,6 +1,8 @@
 var SIGNALS = require('signals');
 
 module.exports = {
+  generateComponentsPanels: new SIGNALS.Signal(),
+
   editorCleared: new SIGNALS.Signal(),
   transformModeChanged: new SIGNALS.Signal(),
   snapChanged: new SIGNALS.Signal(),

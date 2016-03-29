@@ -380,6 +380,7 @@ function Attributes (editor) {
   editor.signals.componentChanged.add(function (evt) {
     var entity = evt.detail.target;
 
+    /*
     if (evt.detail.newData.shader && evt.detail.newData.shader !== evt.detail.oldData.shader) {
       aframeEditor.editor.shaderLoader.addShaderToScene(evt.detail.newData.shader, function () {
         entity.components.material.update(evt.detail.oldData);
@@ -390,9 +391,16 @@ function Attributes (editor) {
       });
       return;
     }
+    */
 
     updateUI(entity);
     editor.signals.objectChanged.dispatch(entity.object3D);
+  });
+
+  editor.signals.generateComponentsPanels.add(function () {
+    generateComponentsPanels(editor.selected.el);
+    ignoreComponentsChange = false;
+    updateUI(editor.selected.el);
   });
 
   return container;
