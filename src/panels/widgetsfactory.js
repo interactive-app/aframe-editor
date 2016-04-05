@@ -3,7 +3,7 @@ var UI = require('../../lib/vendor/ui.js'); // @todo will be replaced with the n
 
 module.exports = {
   widgets: {},
-  knownWidgetsType: ['select', 'boolean', 'number', 'int', 'string', 'color', 'vec3'],
+  knownWidgetsType: ['select', 'boolean', 'number', 'int', 'string', 'map', 'color', 'vec3'],
 
   /**
    * [updateWidgetValue description]
@@ -88,7 +88,7 @@ module.exports = {
               onUpdateEntityValue(event, componentName, propertyName, property);
               aframeEditor.editor.signals.generateComponentsPanels.dispatch();
             });
-          }
+          };
         }
 
         widget = new UI.Select().setOptions(options);
@@ -103,8 +103,11 @@ module.exports = {
         widget = new UI.Number().setWidth('50px').setPrecision(0);
         break;
       case 'string':
-        widget = new UI.Input('').setWidth('50px');
+        // map
+        widget = new UI.Texture();
+        // widget = new UI.Input('').setWidth('50px');
         break;
+      // case 'map':
       case 'color':
         widget = new UI.Color().setWidth('50px');
         break;

@@ -154,6 +154,10 @@ Editor.prototype = {
 
     window.addEventListener('resize', this.signals.windowResize.dispatch, false);
 
+    this.signals.showModal.add(function (content) {
+      this.panels.modal.show(content);
+    }.bind(this));
+
     var entities = document.querySelectorAll('a-entity');
     for (var i = 0; i < entities.length; ++i) {
       var entity = entities[i];

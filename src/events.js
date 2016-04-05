@@ -36,6 +36,7 @@ module.exports = {
   // A-FRAME
   entitySelected: new SIGNALS.Signal(),
   componentChanged: new SIGNALS.Signal(),
-  editorModeChanged: new SIGNALS.Signal()
+  editorModeChanged: new SIGNALS.Signal(),
+  showModal: new SIGNALS.Signal()
 
 };

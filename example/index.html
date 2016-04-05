@@ -24,6 +24,9 @@
         <a-mixin id="purple" material="color: #93648D"></a-mixin>
         <a-mixin id="short" scale="1 0.5 1"></a-mixin>
         <a-mixin id="yellow" material="color: #FFC65D"></a-mixin>
+        <img id="crateimg" src="../assets/textures/crate.gif">
+        <img id="floorimg" src="../assets/textures/grasslight-big.jpg">
+
       </a-assets>
       <a-entity position="0 1 8">
         <a-entity camera look-controls wasd-controls>
@@ -43,12 +46,14 @@
       <a-entity id="redBox" geometry="primitive: box" material="color:#f00" position="-4 1 0">
         <a-animation mixin="spin"></a-animation>
       </a-entity>
-      <a-entity id="blueBox" geometry="primitive: box" material="color:#00f" position="3 4 0"></a-entity>
+      <a-entity id="crate" geometry="primitive: box" material="src:#crateimg" position="3 4 0"></a-entity>
       <a-entity id="greenBox" geometry="primitive: box" material="color:#0f0" position="4 2 4"></a-entity>
       <a-entity id="spotLight" light="type: point" position="0 3 3"></a-entity>
       <a-entity id="floor" geometry="primitive: cylinder; height: .2; radius: 12;"
-                material="color: #fafafa; metalness: .2; repeat: 50 20; roughness: .1"
+                material="src:#floorimg;color: #fafafa; metalness: .2; roughness: .1"
                 position="0 0 0"></a-entity>
+<!--                material="src:#floorimg;color: #fafafa; metalness: .2; repeat: 50 20; roughness: .1"-->
+
     </a-scene>  
   </body>
 </html>
