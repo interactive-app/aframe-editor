@@ -1,4 +1,4 @@
-/* global aframeCore aframeEditor */
+/* global aframeCore */
 var UI = require('../../lib/vendor/ui.js'); // @todo will be replaced with the npm package
 var WidgetsFactory = require('./widgetsfactory.js'); // @todo will be replaced with the npm package
 
@@ -24,9 +24,19 @@ function Attributes (editor) {
    */
   function handleEntityChange (entity, componentName, propertyName, value) {
     if (propertyName) {
-      entity.setAttribute(componentName, propertyName, value);
+      if (!value) {
+        var parameters = entity.getAttribute(componentName);
+        delete parameters[propertyName];
+        entity.setAttribute(componentName, parameters);
+      } else {
+        entity.setAttribute(componentName, propertyName, value);
+      }
     } else {
-      entity.setAttribute(componentName, value);
+      if (!value) {
+        entity.removeAttribute(componentName);
+      } else {
+        entity.setAttribute(componentName, value);
+      }
     }
   }
 
@@ -215,7 +225,7 @@ function Attributes (editor) {
       var edit = new UI.Button('Edit').setDisabled(true);
       edit.setMarginLeft('4px');
       edit.onClick(function () {
-      //  signals.editScript.dispatch( object, script );
+        //  signals.editScript.dispatch( object, script );
       });
       mixinsContainer.add(edit);
 

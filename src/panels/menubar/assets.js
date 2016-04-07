@@ -20,7 +20,7 @@ function MenuAssets (editor) {
   option.setClass('option');
   option.setTextContent('Add Texture');
   option.onClick(function () {
-    var text = new UI.Text("Hello from UI modal");
+    var text = new UI.Text('Hello from UI modal');
     editor.signals.showModal.dispatch(text);
   });
   options.add(option);
@@ -28,13 +28,11 @@ function MenuAssets (editor) {
   // --------------------------------------------
   // Add texture
   // --------------------------------------------
-  var option = new UI.Row();
+  option = new UI.Row();
   option.setClass('option');
   option.setTextContent('Add 3d Model');
-  option.onClick(function () {
-  });
+  option.onClick(function () {});
   options.add(option);
-
 
   // --------------------------------------------
   // New

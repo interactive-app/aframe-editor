@@ -1,5 +1,6 @@
 /* global aframeEditor THREE */
 var Panels = require('./panels');
+var Dialogs = require('./dialogs');
 var Viewport = require('./viewport');
 var Events = require('./events.js');
 var ComponentLoader = require('./componentloader.js');
@@ -48,6 +49,7 @@ Editor.prototype = {
     this.initEvents();
 
     this.selected = null;
+    this.dialogs = new Dialogs(this);
     this.panels = new Panels(this);
     this.scene = this.sceneEl.object3D;
     this.helpers = {};
@@ -156,6 +158,9 @@ Editor.prototype = {
 
     this.signals.showModal.add(function (content) {
       this.panels.modal.show(content);
+    }.bind(this));
+    this.signals.hideModal.add(function () {
+      this.panels.modal.hide();
     }.bind(this));
 
     var entities = document.querySelectorAll('a-entity');
