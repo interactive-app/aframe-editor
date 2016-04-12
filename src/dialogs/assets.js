@@ -58,10 +58,31 @@ function AssetsDialog (editor) {
       assetsContent.add(row);
     }
 
-    // assetsContent.add(panel);
+    // New content
+    // Add new ID
+    newContent.clear();
+    var newUrl = new UI.Input('').setWidth('150px').setFontSize('12px').onChange(function () {
+      console.log(newUrl.getValue());
+      // handleEntityChange(editor.selected.el, 'id', null, newUrl.getValue());
+      // editor.signals.sceneGraphChanged.dispatch();
+    });
+    newContent.add(newUrl);
 
+    var buttonAddNew = document.createElement('input');
+    buttonAddNew.setAttribute('type', 'button');
+    buttonAddNew.setAttribute('value', 'Add');
+    buttonAddNew.addEventListener('click', function (event) {
+      mapWidget.setValue('url(' + newUrl.getValue() + ')');
+      if (mapWidget.onChangeCallback) {
+        mapWidget.onChangeCallback();
+      }
+      editor.signals.hideModal.dispatch(assetsContent);
+    });
+
+    newContent.dom.appendChild(buttonAddNew);
     editor.signals.showModal.dispatch(container);
   });
+
 /*
   this.sceneGraph = new SceneGraph(editor);
   this.attributes = new Attributes(editor);
@@ -74,17 +95,9 @@ function AssetsDialog (editor) {
   container.add(scene);
 */
 
-
-  var newUrl = new UI.Input('').setWidth('150px').setFontSize('12px').onChange(function () {
-    console.log(newUrl.getValue());
-    // handleEntityChange(editor.selected.el, 'id', null, newUrl.getValue());
-    // editor.signals.sceneGraphChanged.dispatch();
-  });
-  newUrl.setBorder('1px');
   var newContent = new UI.Panel();
-  newContent.add(newUrl);
-  container.add(newContent);
 
+  container.add(newContent);
 
   function select (section) {
     samplesTab.setClass('');
