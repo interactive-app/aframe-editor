@@ -28,6 +28,7 @@
   "dependencies": {
     "aframe": "^0.1.1",
     "clipboard": "^1.5.5",
+    "material-ui": "^0.15.0-alpha.2",
     "signals": "^1.0.0",
     "sortablejs": "^1.4.2"
   },

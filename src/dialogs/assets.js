@@ -14,12 +14,63 @@ var samples = {
   ]
 };
 
+function GetFilename(url) {
+   if (url)
+   {
+      var m = url.toString().match(/.*\/(.+?)\./);
+      if (m && m.length > 1)
+      {
+         return m[1];
+      }
+   }
+   return '';
+}
+
 function AssetsDialog (editor) {
   var container = new UI.Panel();
 
   // -------------------------------------
   var tabs = new UI.Div();
   tabs.setId('tabs');
+
+  function insertNewAsset(type, id, src) {
+    var element = null;
+    switch (type) {
+      case 'img': {
+          element = document.createElement("img");
+          element.id = id;
+
+          element.src = src;
+      } break;
+    }
+    if (element)
+      document.getElementsByTagName("a-assets")[0].appendChild(element);
+  }
+
+  function insertOrGetAsset(type, src) {
+    var id = GetFilename(src);
+    // Search for already loaded asset by src
+    var element = document.querySelector("a-assets > img[src='" + src + "']");
+    if (element) {
+      id = element.id;
+    } else {
+      // Check if first char of the ID is a number (Non a valid ID)
+      // In that case a 'i' preffix will be added
+      if (!isNaN(parseInt(id[0], 10))) {
+        id='i' + id;
+      }
+      if (document.getElementById(id)) {
+        var i = 1;
+        while (document.getElementById(id + '_' + i)) {
+          i++;
+        }
+        id += '_' + i;
+      }
+      insertNewAsset('img', id, src);
+    }
+
+    return id;
+  }
 
   var assetsTab = new UI.Text('ASSETS').onClick(onClick);
   var samplesTab = new UI.Text('SAMPLES').onClick(onClick);
@@ -29,7 +80,6 @@ function AssetsDialog (editor) {
   tabs.add(assetsTab, samplesTab, newTab);
 
   container.add(tabs);
-  // container.add(newUrl);
 
   function onClick (event) {
     select(event.target.textContent);
@@ -59,7 +109,7 @@ function AssetsDialog (editor) {
     button.setAttribute('value', 'select');
     (function (_texture) {
       button.addEventListener('click', function (event) {
-        mapWidget.setValue('url(' + _texture + ')');
+        mapWidget.setValue('#'+insertOrGetAsset('img',_texture));
         if (mapWidget.onChangeCallback) {
           mapWidget.onChangeCallback();
         }
@@ -81,7 +131,6 @@ function AssetsDialog (editor) {
     // Assets content
     samplesContent.clear();
     for (var i in samples['textures']) {
-      console.log('../assets/textures/'+samples['textures'][i]);
       var row = getImageWidget('../assets/textures/'+samples['textures'][i], mapWidget);
       samplesContent.add(row);
     }
@@ -100,7 +149,8 @@ function AssetsDialog (editor) {
     buttonAddNew.setAttribute('type', 'button');
     buttonAddNew.setAttribute('value', 'Add');
     buttonAddNew.addEventListener('click', function (event) {
-      mapWidget.setValue('url(' + newUrl.getValue() + ')');
+      mapWidget.setValue('#'+insertOrGetAsset('img',_texture));
+      //mapWidget.setValue('url(' + newUrl.getValue() + ')');
       if (mapWidget.onChangeCallback) {
         mapWidget.onChangeCallback();
       }
