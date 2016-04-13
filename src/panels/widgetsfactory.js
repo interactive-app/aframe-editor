@@ -103,13 +103,13 @@ module.exports = {
         widget = new UI.Number().setWidth('50px').setPrecision(0);
         break;
       case 'string':
-        // map
-        widget = new UI.Texture();
-        // widget = new UI.Input('').setWidth('50px');
+        widget = new UI.Input('').setWidth('50px');
         break;
-      // case 'map':
       case 'color':
         widget = new UI.Color().setWidth('50px');
+        break;
+      case 'map':
+        widget = new UI.Texture();
         break;
       case 'vec3':
         widget = new UI.Vector3().setWidth('150px');

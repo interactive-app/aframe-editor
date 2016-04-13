@@ -8,7 +8,7 @@ function MenuAssets (editor) {
   title.setClass('title');
   title.setTextContent('Assets');
   container.add(title);
-
+/*
   var options = new UI.Panel();
   options.setClass('options');
   container.add(options);
@@ -33,33 +33,7 @@ function MenuAssets (editor) {
   option.setTextContent('Add 3d Model');
   option.onClick(function () {});
   options.add(option);
-
-  // --------------------------------------------
-  // New
-  // --------------------------------------------
-  /*
-    var prevGroup = null;
-    for (var definition in primitivesDefinitions) {
-      // Add a line break if the group changes
-      if (prevGroup === null) {
-        prevGroup = primitivesDefinitions[definition].group;
-      } else if (prevGroup !== primitivesDefinitions[definition].group) {
-        prevGroup = primitivesDefinitions[definition].group;
-        options.add(new UI.HorizontalRule());
-      }
-
-      // Generate a new option in the menu
-      var option = new UI.Row();
-      option.setClass('option');
-      option.setTextContent(definition);
-      option.dom.onclick = (function (def) {
-        return function () {
-          createNewEntity(def);
-        };
-      })(primitivesDefinitions[definition]);
-      options.add(option);
-    }
-  */
+*/
   return container;
 }
 

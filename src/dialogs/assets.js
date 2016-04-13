@@ -1,7 +1,7 @@
 var UI = require('../../lib/vendor/ui.js'); // @todo will be replaced with the npm package
 var samples = {
   "textures": [
-    '758px-Canestra_di_frutta_(Caravaggio).jpg',
+    '758px-Canestra_di_frutta_Caravaggio.jpg',
     '2294472375_24a3b8ef46_o.jpg',
     'brick_bump.jpg',
     'brick_diffuse.jpg',
@@ -28,6 +28,7 @@ function GetFilename(url) {
 
 function AssetsDialog (editor) {
   var container = new UI.Panel();
+  container.setClass('assets-dialog');
 
   // -------------------------------------
   var tabs = new UI.Div();
@@ -139,7 +140,6 @@ function AssetsDialog (editor) {
     // Add new ID
     newContent.clear();
     var newUrl = new UI.Input('').setWidth('150px').setFontSize('12px').onChange(function () {
-      console.log(newUrl.getValue());
       // handleEntityChange(editor.selected.el, 'id', null, newUrl.getValue());
       // editor.signals.sceneGraphChanged.dispatch();
     });
@@ -149,7 +149,8 @@ function AssetsDialog (editor) {
     buttonAddNew.setAttribute('type', 'button');
     buttonAddNew.setAttribute('value', 'Add');
     buttonAddNew.addEventListener('click', function (event) {
-      mapWidget.setValue('#'+insertOrGetAsset('img',_texture));
+      mapWidget.setValue('#'+insertOrGetAsset('img',newUrl.getValue()));
+      //mapWidget.setValue('#'+insertOrGetAsset('img',_texture));
       //mapWidget.setValue('url(' + newUrl.getValue() + ')');
       if (mapWidget.onChangeCallback) {
         mapWidget.onChangeCallback();

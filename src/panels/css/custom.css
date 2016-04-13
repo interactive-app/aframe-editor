@@ -14,3 +14,7 @@
 .Animation {
   color: #ee8888;
 }
+
+.assets-dialog .Input {
+	border: 1px solid #999 !important;
+}
