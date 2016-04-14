@@ -44,6 +44,8 @@ Editor.prototype = {
     this.DEFAULT_CAMERA.name = 'Camera';
     this.DEFAULT_CAMERA.position.set(20, 10, 20);
     this.DEFAULT_CAMERA.lookAt(new THREE.Vector3());
+    this.DEFAULT_CAMERA.updateMatrixWorld();
+
     this.camera = this.DEFAULT_CAMERA;
 
     this.initEvents();
@@ -150,7 +152,6 @@ Editor.prototype = {
     this.signals = Events;
     this.signals.editorModeChanged.add(function (active) {
       this.editorActive = active;
-
       this.sceneHelpers.visible = this.editorActive;
     }.bind(this));
 
@@ -213,7 +214,7 @@ Editor.prototype = {
     this.panels.sidebar.show();
     this.panels.menubar.show();
     this.signals.editorModeChanged.dispatch(true);
-    this.sceneEl.pause();
+    //this.sceneEl.pause();
   },
 
   disable: function () {

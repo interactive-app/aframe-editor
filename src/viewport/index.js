@@ -248,6 +248,7 @@ function Viewport (editor) {
   });
 
   signals.objectSelected.add(function (object) {
+    console.log("ASDF");
     selectionBox.visible = false;
     transformControls.detach();
     if (object !== null) {
@@ -323,6 +324,7 @@ function Viewport (editor) {
       document.querySelector('.a-enter-vr,.rs-base').style.display = 'block';
     }
   });
+
 }
 
 module.exports = Viewport;
